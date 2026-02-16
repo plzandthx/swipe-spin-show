@@ -64,7 +64,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         const normalizedAngle = Math.abs(((angle + 90) % 360 + 360) % 360);
         const absAngle = normalizedAngle > 180 ? 360 - normalizedAngle : normalizedAngle;
         const scale = gsap.utils.mapRange(0, 60, 1, 0.55, Math.min(absAngle, 60));
-        const opacity = gsap.utils.mapRange(0, 60, 1, 0.15, Math.min(absAngle, 60));
+        const opacity = 1;
 
         gsap.set(card, {
           x,
@@ -203,8 +203,8 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           </div>
 
           <div className="flex flex-col gap-2 px-1 text-center w-full">
-            <h3 className="slider-card__title text-xl">{card.title}</h3>
-            <p className="slider-card__text text-sm">{card.description}</p>
+            <h3 className="slider-card__title text-2xl">{card.title}</h3>
+            <p className="slider-card__text text-base">{card.description}</p>
           </div>
         </div>
       ))}
