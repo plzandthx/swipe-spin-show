@@ -179,7 +179,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       ref={containerRef}
       className="relative w-full overflow-visible"
       style={{
-        height: "clamp(600px, 85vh, 1000px)",
+        height: "clamp(600px, 75vh, 1000px)",
         touchAction: "none",
         marginTop: "clamp(20px, 5vh, 60px)",
       }}
@@ -218,7 +218,10 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         </div>
       ))}
 
-      <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 pb-4">
+      <div
+        className="pointer-events-none absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-6"
+        style={{ bottom: "clamp(-40px, -15vw + 180px, 200px)" }}
+      >
         <h1
           className="text-center whitespace-nowrap"
           style={{
