@@ -217,7 +217,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
               style={{
                 color: card.textColor || undefined,
                 fontFamily: "'Inter Tight', sans-serif",
-                fontWeight: 600,
+                fontWeight: 400,
                 fontSize: "clamp(1.275rem, 3vw, 2.55rem)",
                 lineHeight: 1.3,
               }}
@@ -229,6 +229,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
                 color: card.textColor === "white" ? "white" : card.textColor ? "#333333" : undefined,
                 fontFamily: "'Inter Tight', sans-serif",
                 fontSize: "clamp(1rem, 2.25vw, 1.4rem)",
+                fontWeight: 300,
                 lineHeight: 1.6,
               }}
               className={!card.textColor ? "slider-card__text" : ""}
