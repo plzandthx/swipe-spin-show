@@ -226,7 +226,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
             <p
               style={{
                 color: card.textColor === "white" ? "rgba(255,255,255,0.7)" : card.textColor ? "rgba(50,50,50,0.7)" : undefined,
-                fontSize: "clamp(0.875rem, 2vw, 1.25rem)",
+                fontSize: "clamp(1.1rem, 2.5vw, 1.5625rem)",
                 lineHeight: 1.6,
               }}
               className={!card.textColor ? "slider-card__text" : ""}
