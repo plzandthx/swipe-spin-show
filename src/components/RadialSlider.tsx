@@ -29,7 +29,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
   const rafRef = useRef<number>(0);
 
   const totalCards = cards.length;
-  const arcSpan = typeof window !== "undefined" && window.innerWidth >= 1024 ? 25 : 18;
+  const arcSpan = 18;
 
   const positionCards = useCallback(
     (rotation: number) => {
