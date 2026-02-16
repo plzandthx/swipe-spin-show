@@ -38,7 +38,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
   const totalCards = cards.length;
   const bp = typeof window !== "undefined" ? getBreakpoint(window.innerWidth) : "sm";
-  const arcSpan = bp === "lg" ? 20 : bp === "md" ? 16 : 10;
+  const arcSpan = bp === "lg" ? 20 : bp === "md" ? 16 : 18;
 
   const positionCards = useCallback(
     (rotation: number) => {
