@@ -148,17 +148,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       },
     });
 
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      gsap.killTweensOf(rotationRef);
-      cancelAnimationFrame(rafRef.current);
-
-      rotationRef.current -= e.deltaY * 0.06;
-      positionCards(rotationRef.current);
-
-      gsap.delayedCall(0.4, snapToNearest);
-    };
-    container.addEventListener("wheel", handleWheel, { passive: false });
 
     const handleResize = () => positionCards(rotationRef.current);
     window.addEventListener("resize", handleResize);
@@ -167,7 +156,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       draggable[0]?.kill();
       proxy.remove();
       window.removeEventListener("resize", handleResize);
-      container.removeEventListener("wheel", handleWheel);
       cancelAnimationFrame(rafRef.current);
     };
   }, [positionCards, snapToNearest]);
