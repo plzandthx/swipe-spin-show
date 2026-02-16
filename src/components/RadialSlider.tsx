@@ -16,9 +16,9 @@ interface RadialSliderProps {
 }
 
 const CARD_WIDTH_SM = 340;
-const CARD_HEIGHT_SM = 420;
+const CARD_HEIGHT_SM = 483;
 const CARD_WIDTH_LG = 520;
-const CARD_HEIGHT_LG = 620;
+const CARD_HEIGHT_LG = 713;
 
 const RadialSlider = ({ cards }: RadialSliderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
