@@ -38,7 +38,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
   const totalCards = cards.length;
   const bp = typeof window !== "undefined" ? getBreakpoint(window.innerWidth) : "sm";
-  const arcSpan = bp === "lg" ? 20 : bp === "md" ? 16 : 18;
+  const arcSpan = bp === "lg" ? 20 : bp === "md" ? 24 : 18;
 
   const positionCards = useCallback(
     (rotation: number) => {
@@ -54,7 +54,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       const radius = bp === "lg" 
         ? Math.max(containerWidth * 0.9, 800) 
         : bp === "md" 
-          ? Math.max(containerWidth * 1.1, 700) 
+          ? Math.max(containerWidth * 1.4, 900) 
           : Math.max(containerWidth * 0.9, 800);
       const centerX = containerWidth / 2;
       const centerY = radius + containerHeight * 0.05 + cardH / 2;
@@ -190,7 +190,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           }}
           className="slider-card absolute top-0 left-0 flex flex-col items-center"
           style={{
-            width: "min(520px, clamp(280px, 55vw, 520px))",
+            width: "clamp(280px, min(55vw, 42vw + 60px), 520px)",
             height: "auto",
             aspectRatio: `${CARD_WIDTH_LG} / ${CARD_HEIGHT_LG}`,
             padding: "1rem",
