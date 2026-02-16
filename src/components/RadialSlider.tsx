@@ -54,7 +54,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       const radius = bp === "lg" 
         ? Math.max(containerWidth * 0.9, 800) 
         : bp === "md" 
-          ? Math.max(containerWidth * 1.1, 700) 
+          ? Math.max(containerWidth * 1.6, 1000) 
           : Math.max(containerWidth * 0.9, 800);
       const centerX = containerWidth / 2;
       const centerY = radius + containerHeight * 0.05 + cardH / 2;
