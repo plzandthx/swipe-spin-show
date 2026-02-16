@@ -35,9 +35,12 @@ const sliderCards = [
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background">
+    <div className="flex flex-col items-center bg-background">
       <div className="w-full">
         <RadialSlider cards={sliderCards} />
+      </div>
+      <div className="w-full h-[60vh] bg-muted/30 flex items-center justify-center">
+        <span className="text-muted-foreground text-sm tracking-widest uppercase">Spacer section</span>
       </div>
     </div>
   );
