@@ -35,7 +35,7 @@ const sliderCards = [
   },
   {
     id: 5,
-    title: "92 Engagement",
+    title: "360% EBITDA Growth",
     description: "EBITDA growth on key verticals while leading design across a FinTech portfolio",
     imagePlaceholder: "🧭 Image",
     bgColor: "0D2B1E",
