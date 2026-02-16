@@ -57,7 +57,8 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           ? Math.max(containerWidth * 1.4, 900) 
           : Math.max(containerWidth * 0.9, 800);
       const centerX = containerWidth / 2;
-      const centerY = radius + containerHeight * 0.05 + cardH / 2;
+      const verticalOffset = bp === "lg" ? 0.03 : bp === "md" ? -0.02 : -0.05;
+      const centerY = radius + containerHeight * verticalOffset + cardH / 2;
 
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
@@ -178,7 +179,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       ref={containerRef}
       className="relative w-full overflow-hidden"
       style={{
-        height: "clamp(550px, 75vh, 900px)",
+        height: "clamp(600px, 85vh, 1000px)",
         touchAction: "none",
       }}
     >
