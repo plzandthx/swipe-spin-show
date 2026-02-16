@@ -4,7 +4,7 @@ const sliderCards = [
   {
     id: 1,
     title: "Creative Direction",
-    description: "Shaping brand narratives through bold visual storytelling.",
+    description: "Annual recurring revenue growth driven by a culture of innovation and experimentation",
     imagePlaceholder: "🎨 Image",
     bgColor: "224F3C",
     textColor: "white",
@@ -12,7 +12,7 @@ const sliderCards = [
   {
     id: 2,
     title: "Motion Design",
-    description: "Fluid animations that bring interfaces to life.",
+    description: "Company acquisitions as head of design",
     imagePlaceholder: "✨ Image",
     bgColor: "1D6161",
     textColor: "white",
@@ -20,7 +20,7 @@ const sliderCards = [
   {
     id: 3,
     title: "Development",
-    description: "Pixel-perfect code crafted for performance and scale.",
+    description: "Enterprise-level conversion optimization unlocked by deep customer insights",
     imagePlaceholder: "💻 Image",
     bgColor: "FFFFFF",
     textColor: "#333333",
@@ -28,7 +28,7 @@ const sliderCards = [
   {
     id: 4,
     title: "Strategy",
-    description: "Data-driven insights powering every creative decision.",
+    description: "Customer satisfaction score launching innovative 0→1 product experiences",
     imagePlaceholder: "📊 Image",
     bgColor: "58B469",
     textColor: "white",
@@ -36,7 +36,7 @@ const sliderCards = [
   {
     id: 5,
     title: "Experience",
-    description: "Designing interactions that feel natural and intuitive.",
+    description: "EBITDA growth on key verticals while leading design across a FinTech portfolio",
     imagePlaceholder: "🧭 Image",
     bgColor: "0D2B1E",
     textColor: "white",
