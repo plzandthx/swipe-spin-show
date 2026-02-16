@@ -3,7 +3,7 @@ import RadialSlider from "@/components/RadialSlider";
 const sliderCards = [
   {
     id: 1,
-    title: "Creative Direction",
+    title: "92% ARR Growth",
     description: "Annual recurring revenue growth driven by a culture of innovation and experimentation",
     imagePlaceholder: "🎨 Image",
     bgColor: "224F3C",
@@ -11,7 +11,7 @@ const sliderCards = [
   },
   {
     id: 2,
-    title: "Motion Design",
+    title: "3X Acquisitions",
     description: "Company acquisitions as head of design",
     imagePlaceholder: "✨ Image",
     bgColor: "1D6161",
@@ -19,7 +19,7 @@ const sliderCards = [
   },
   {
     id: 3,
-    title: "Development",
+    title: "25% Optimization",
     description: "Enterprise-level conversion optimization unlocked by deep customer insights",
     imagePlaceholder: "💻 Image",
     bgColor: "FFFFFF",
@@ -27,7 +27,7 @@ const sliderCards = [
   },
   {
     id: 4,
-    title: "Strategy",
+    title: "4.8 CSAT",
     description: "Customer satisfaction score launching innovative 0→1 product experiences",
     imagePlaceholder: "📊 Image",
     bgColor: "58B469",
@@ -35,7 +35,7 @@ const sliderCards = [
   },
   {
     id: 5,
-    title: "Experience",
+    title: "92 Engagement",
     description: "EBITDA growth on key verticals while leading design across a FinTech portfolio",
     imagePlaceholder: "🧭 Image",
     bgColor: "0D2B1E",
