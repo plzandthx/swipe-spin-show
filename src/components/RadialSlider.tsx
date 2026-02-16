@@ -15,10 +15,10 @@ interface RadialSliderProps {
   cards: SliderCard[];
 }
 
-const CARD_WIDTH_SM = 360;
-const CARD_HEIGHT_SM = 500;
-const CARD_WIDTH_LG = 440;
-const CARD_HEIGHT_LG = 580;
+const CARD_WIDTH_SM = 340;
+const CARD_HEIGHT_SM = 420;
+const CARD_WIDTH_LG = 520;
+const CARD_HEIGHT_LG = 620;
 
 const RadialSlider = ({ cards }: RadialSliderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -177,7 +177,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           }}
           className="slider-card absolute top-0 left-0 flex flex-col items-center"
           style={{
-            width: "min(440px, 90vw)",
+            width: "min(520px, 85vw)",
             height: "auto",
             aspectRatio: `${CARD_WIDTH_LG} / ${CARD_HEIGHT_LG}`,
             padding: "1rem",
@@ -187,7 +187,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           <div
             className="slider-card__image mb-5 flex items-center justify-center w-full"
             style={{
-              height: "55%",
+              height: "65%",
               backgroundColor: "hsl(var(--slider-card-fg) / 0.08)",
             }}
           >

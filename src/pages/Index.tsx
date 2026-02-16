@@ -36,7 +36,7 @@ const sliderCards = [
 const Index = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background">
-      <div className="w-full max-w-[1920px]">
+      <div className="w-full">
         <RadialSlider cards={sliderCards} />
       </div>
     </div>
