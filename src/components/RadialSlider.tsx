@@ -216,6 +216,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
             <h3
               style={{
                 color: card.textColor || undefined,
+                fontFamily: "'Inter Tight', sans-serif",
                 fontWeight: 600,
                 fontSize: "clamp(1.275rem, 3vw, 2.55rem)",
                 lineHeight: 1.3,
@@ -226,6 +227,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
             <p
               style={{
                 color: card.textColor === "white" ? "white" : card.textColor ? "#333333" : undefined,
+                fontFamily: "'Inter Tight', sans-serif",
                 fontSize: "clamp(1.1rem, 2.5vw, 1.5625rem)",
                 lineHeight: 1.6,
               }}
