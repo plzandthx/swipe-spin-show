@@ -9,6 +9,8 @@ interface SliderCard {
   title: string;
   description: string;
   imagePlaceholder: string;
+  bgColor?: string;
+  textColor?: string;
 }
 
 interface RadialSliderProps {
@@ -190,25 +192,47 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
             width: "clamp(280px, min(55vw, 42vw + 60px), 520px)",
             height: "auto",
             aspectRatio: `${CARD_WIDTH_LG} / ${CARD_HEIGHT_LG}`,
-            padding: "1rem",
+            padding: "clamp(1rem, 2.5vw, 1.75rem)",
             willChange: "transform",
+            backgroundColor: card.bgColor ? `#${card.bgColor}` : undefined,
+            color: card.textColor || undefined,
           }}
         >
           <div
             className="slider-card__image mb-5 flex items-center justify-center w-full"
             style={{
               height: "65%",
-              backgroundColor: "hsl(var(--slider-card-fg) / 0.08)",
+              backgroundColor: card.textColor
+                ? `${card.textColor === "white" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)"}`
+                : "hsl(var(--slider-card-fg) / 0.08)",
             }}
           >
-            <span className="slider-card__text text-3xl">
+            <span className="text-3xl" style={{ color: card.textColor || undefined }}>
               {card.imagePlaceholder}
             </span>
           </div>
 
-          <div className="flex flex-col gap-2 px-1 text-center w-full">
-            <h3 className="slider-card__title text-2xl">{card.title}</h3>
-            <p className="slider-card__text text-base">{card.description}</p>
+          <div className="flex flex-col gap-3 px-2 text-center w-full">
+            <h3
+              style={{
+                color: card.textColor || undefined,
+                fontWeight: 600,
+                fontSize: "clamp(1.5rem, 3.5vw, 3rem)",
+                lineHeight: 1.3,
+              }}
+            >
+              {card.title}
+            </h3>
+            <p
+              style={{
+                color: card.textColor === "white" ? "rgba(255,255,255,0.7)" : card.textColor ? "rgba(50,50,50,0.7)" : undefined,
+                fontSize: "clamp(0.875rem, 2vw, 1.25rem)",
+                lineHeight: 1.6,
+              }}
+              className={!card.textColor ? "slider-card__text" : ""}
+            >
+              {card.description}
+            </p>
           </div>
         </div>
       ))}
