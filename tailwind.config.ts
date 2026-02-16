@@ -47,6 +47,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "slider-card": {
+          DEFAULT: "hsl(var(--slider-card-bg))",
+          foreground: "hsl(var(--slider-card-fg))",
+          muted: "hsl(var(--slider-card-muted))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
