@@ -68,7 +68,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
         const normalizedAngle = Math.abs(((angle + 90) % 360 + 360) % 360);
         const absAngle = normalizedAngle > 180 ? 360 - normalizedAngle : normalizedAngle;
-        const scale = gsap.utils.mapRange(0, 60, 1, 0.55, Math.min(absAngle, 60));
+        const scale = 1;
         const opacity = 1;
 
         gsap.set(card, {
