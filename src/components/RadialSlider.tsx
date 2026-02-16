@@ -32,6 +32,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rotationRef = useRef(0);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const headerRef = useRef<HTMLDivElement>(null);
   const velocityRef = useRef(0);
   const lastXRef = useRef(0);
   const rafRef = useRef<number>(0);
@@ -60,17 +61,16 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       const verticalOffset = bp === "lg" ? 0.03 : bp === "md" ? 0.02 : 0.05;
       const centerY = radius + containerHeight * verticalOffset + cardH / 2;
 
+      let maxCardBottom = 0;
+
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
 
         const totalSpan = (totalCards - 1) * arcSpan;
-        // Base angle for this card
         const baseAngle = -90 - totalSpan / 2 + i * arcSpan + rotation;
         
-        // Wrap the angle into infinite loop using modulo
         const fullCircle = totalCards * arcSpan;
         let wrappedOffset = ((baseAngle + 90 + totalSpan / 2) % fullCircle + fullCircle) % fullCircle;
-        // Re-center so cards distribute around -90 degrees
         const angle = -90 - totalSpan / 2 + wrappedOffset;
 
         const rad = (angle * Math.PI) / 180;
@@ -82,18 +82,29 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
         const normalizedAngle = Math.abs(((angle + 90) % 360 + 360) % 360);
         const absAngle = normalizedAngle > 180 ? 360 - normalizedAngle : normalizedAngle;
-        const scale = 1;
-        const opacity = 1;
+
+        // Track the bottom of the center card (closest to -90°)
+        if (absAngle < arcSpan / 2) {
+          maxCardBottom = y + cardH;
+        }
 
         gsap.set(card, {
           x,
           y,
           rotation: tilt,
-          scale,
-          opacity,
+          scale: 1,
+          opacity: 1,
           zIndex: Math.round((1 - absAngle / 180) * 100),
         });
       });
+
+      // Position header below the center card
+      if (headerRef.current) {
+        const gap = bp === "lg" ? 40 : bp === "md" ? 30 : 20;
+        gsap.set(headerRef.current, {
+          top: maxCardBottom + gap,
+        });
+      }
     },
     [arcSpan, totalCards]
   );
@@ -219,8 +230,8 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       ))}
 
       <div
+        ref={headerRef}
         className="pointer-events-none absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-6"
-        style={{ bottom: "clamp(-40px, -15vw + 180px, 200px)" }}
       >
         <h1
           className="text-center whitespace-nowrap"
