@@ -15,8 +15,8 @@ interface RadialSliderProps {
   cards: SliderCard[];
 }
 
-const CARD_WIDTH = 300;
-const CARD_HEIGHT = 420;
+const CARD_WIDTH = 360;
+const CARD_HEIGHT = 500;
 
 const RadialSlider = ({ cards }: RadialSliderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -28,14 +28,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
   const totalCards = cards.length;
   const arcSpan = 18;
-  // Rotation goes negative to move cards left (next), positive to move right (prev)
-  const minRotation = -((totalCards - 1) * arcSpan);
-  const maxRotation = 0;
-
-  const clampRotation = useCallback(
-    (r: number) => gsap.utils.clamp(minRotation, maxRotation, r),
-    [minRotation, maxRotation]
-  );
 
   const positionCards = useCallback(
     (rotation: number) => {
@@ -53,7 +45,15 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         if (!card) return;
 
         const totalSpan = (totalCards - 1) * arcSpan;
-        const angle = -90 - totalSpan / 2 + i * arcSpan + rotation;
+        // Base angle for this card
+        const baseAngle = -90 - totalSpan / 2 + i * arcSpan + rotation;
+        
+        // Wrap the angle into infinite loop using modulo
+        const fullCircle = totalCards * arcSpan;
+        let wrappedOffset = ((baseAngle + 90 + totalSpan / 2) % fullCircle + fullCircle) % fullCircle;
+        // Re-center so cards distribute around -90 degrees
+        const angle = -90 - totalSpan / 2 + wrappedOffset;
+
         const rad = (angle * Math.PI) / 180;
 
         const x = centerX + radius * Math.cos(rad) - CARD_WIDTH / 2;
@@ -80,15 +80,14 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
   );
 
   const snapToNearest = useCallback(() => {
-    const clamped = clampRotation(rotationRef.current);
-    const snapped = Math.round(clamped / arcSpan) * arcSpan;
+    const snapped = Math.round(rotationRef.current / arcSpan) * arcSpan;
     gsap.to(rotationRef, {
       current: snapped,
       duration: 0.5,
       ease: "power2.out",
       onUpdate: () => positionCards(rotationRef.current),
     });
-  }, [arcSpan, positionCards, clampRotation]);
+  }, [arcSpan, positionCards]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -121,20 +120,19 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         const dx = this.x - lastXRef.current;
         const now = Date.now();
         const dt = Math.max(now - lastTime, 1);
-        velocityRef.current = dx / dt * 16;
+        velocityRef.current = (dx / dt) * 16;
         lastXRef.current = this.x;
         lastTime = now;
 
-        rotationRef.current = clampRotation(rotationRef.current + dx * 0.12);
+        // No clamping — infinite rotation
+        rotationRef.current += dx * 0.12;
         positionCards(rotationRef.current);
       },
       onDragEnd: function () {
         const decay = () => {
           velocityRef.current *= 0.92;
           if (Math.abs(velocityRef.current) > 0.3) {
-            rotationRef.current = clampRotation(
-              rotationRef.current + velocityRef.current * 0.12
-            );
+            rotationRef.current += velocityRef.current * 0.12;
             positionCards(rotationRef.current);
             rafRef.current = requestAnimationFrame(decay);
           } else {
@@ -150,9 +148,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       gsap.killTweensOf(rotationRef);
       cancelAnimationFrame(rafRef.current);
 
-      rotationRef.current = clampRotation(
-        rotationRef.current - e.deltaY * 0.06
-      );
+      rotationRef.current -= e.deltaY * 0.06;
       positionCards(rotationRef.current);
 
       gsap.delayedCall(0.4, snapToNearest);
@@ -169,14 +165,14 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       container.removeEventListener("wheel", handleWheel);
       cancelAnimationFrame(rafRef.current);
     };
-  }, [positionCards, snapToNearest, clampRotation]);
+  }, [positionCards, snapToNearest]);
 
   return (
     <div
       ref={containerRef}
       className="relative w-full overflow-hidden"
       style={{
-        height: "clamp(500px, 70vh, 800px)",
+        height: "clamp(550px, 75vh, 900px)",
         touchAction: "none",
       }}
     >
@@ -186,16 +182,16 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           ref={(el) => {
             cardRefs.current[i] = el;
           }}
-          className="slider-card absolute top-0 left-0 flex flex-col"
+          className="slider-card absolute top-0 left-0 flex flex-col items-center"
           style={{
             width: CARD_WIDTH,
             height: CARD_HEIGHT,
-            padding: "0.75rem",
+            padding: "1rem",
             willChange: "transform",
           }}
         >
           <div
-            className="slider-card__image mb-4 flex items-center justify-center"
+            className="slider-card__image mb-5 flex items-center justify-center w-full"
             style={{
               height: "55%",
               backgroundColor: "hsl(var(--slider-card-fg) / 0.08)",
@@ -206,8 +202,8 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
             </span>
           </div>
 
-          <div className="flex flex-col gap-2 px-1">
-            <h3 className="slider-card__title text-lg">{card.title}</h3>
+          <div className="flex flex-col gap-2 px-1 text-center w-full">
+            <h3 className="slider-card__title text-xl">{card.title}</h3>
             <p className="slider-card__text text-sm">{card.description}</p>
           </div>
         </div>
