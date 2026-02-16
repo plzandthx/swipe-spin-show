@@ -212,7 +212,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
             </span>
           </div>
 
-          <div className="flex flex-col gap-3 px-2 text-center w-full">
+          <div className="flex flex-col gap-3 text-center w-full" style={{ padding: "0 15%" }}>
             <h3
               style={{
                 color: card.textColor || undefined,
@@ -225,7 +225,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
             </h3>
             <p
               style={{
-                color: card.textColor === "white" ? "rgba(255,255,255,0.7)" : card.textColor ? "rgba(50,50,50,0.7)" : undefined,
+                color: card.textColor === "white" ? "white" : card.textColor ? "#333333" : undefined,
                 fontSize: "clamp(1.1rem, 2.5vw, 1.5625rem)",
                 lineHeight: 1.6,
               }}
