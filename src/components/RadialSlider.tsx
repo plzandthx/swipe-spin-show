@@ -32,7 +32,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rotationRef = useRef(0);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const headerRef = useRef<HTMLDivElement>(null);
   const velocityRef = useRef(0);
   const lastXRef = useRef(0);
   const rafRef = useRef<number>(0);
@@ -61,8 +60,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       const verticalOffset = bp === "lg" ? 0.03 : bp === "md" ? 0.02 : 0.05;
       const centerY = radius + containerHeight * verticalOffset + cardH / 2;
 
-      let maxCardBottom = 0;
-
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
 
@@ -83,11 +80,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         const normalizedAngle = Math.abs(((angle + 90) % 360 + 360) % 360);
         const absAngle = normalizedAngle > 180 ? 360 - normalizedAngle : normalizedAngle;
 
-        // Track the bottom of the center card (closest to -90°)
-        if (absAngle < arcSpan / 2) {
-          maxCardBottom = y + cardH;
-        }
-
         gsap.set(card, {
           x,
           y,
@@ -97,14 +89,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           zIndex: Math.round((1 - absAngle / 180) * 100),
         });
       });
-
-      // Position header below the center card
-      if (headerRef.current) {
-        const gap = bp === "lg" ? 40 : bp === "md" ? 30 : 20;
-        gsap.set(headerRef.current, {
-          top: maxCardBottom + gap,
-        });
-      }
     },
     [arcSpan, totalCards]
   );
@@ -190,7 +174,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       ref={containerRef}
       className="relative w-full overflow-visible"
       style={{
-        height: "clamp(600px, 75vh, 1000px)",
+        height: "clamp(600px, 80vh, 1100px)",
         touchAction: "none",
         marginTop: "clamp(20px, 5vh, 60px)",
       }}
@@ -230,8 +214,8 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       ))}
 
       <div
-        ref={headerRef}
         className="pointer-events-none absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-6"
+        style={{ bottom: "clamp(10px, -8vw + 120px, 100px)" }}
       >
         <h1
           className="text-center whitespace-nowrap"
