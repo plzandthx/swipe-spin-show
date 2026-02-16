@@ -218,13 +218,13 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         </div>
       ))}
 
-      <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pb-4">
+      <div className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 pb-4">
         <h1
           className="text-center whitespace-nowrap"
           style={{
             fontFamily: "'Inter Tight', sans-serif",
             fontWeight: 800,
-            fontSize: "clamp(2.5rem, 6vw, 5.5rem)",
+            fontSize: "clamp(2rem, 5vw, 4.5rem)",
             color: "hsl(0 0% 18%)",
             lineHeight: 1,
             letterSpacing: "-0.03em",

@@ -35,11 +35,11 @@ const sliderCards = [
 
 const Index = () => {
   return (
-    <div className="flex flex-col items-center bg-background overflow-x-hidden">
+    <div className="flex flex-col items-center overflow-x-hidden">
       <div className="w-full">
         <RadialSlider cards={sliderCards} />
       </div>
-      <div className="w-full h-[60vh] bg-muted/30 flex items-center justify-center">
+      <div className="w-full h-[60vh] flex items-center justify-center">
         <span className="text-muted-foreground text-sm tracking-widest uppercase">Spacer section</span>
       </div>
     </div>
