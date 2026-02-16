@@ -217,7 +217,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
               style={{
                 color: card.textColor || undefined,
                 fontWeight: 600,
-                fontSize: "clamp(1.5rem, 3.5vw, 3rem)",
+                fontSize: "clamp(1.275rem, 3vw, 2.55rem)",
                 lineHeight: 1.3,
               }}
             >
