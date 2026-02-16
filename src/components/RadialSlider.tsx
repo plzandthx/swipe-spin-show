@@ -15,8 +15,10 @@ interface RadialSliderProps {
   cards: SliderCard[];
 }
 
-const CARD_WIDTH = 360;
-const CARD_HEIGHT = 500;
+const CARD_WIDTH_SM = 360;
+const CARD_HEIGHT_SM = 500;
+const CARD_WIDTH_LG = 440;
+const CARD_HEIGHT_LG = 580;
 
 const RadialSlider = ({ cards }: RadialSliderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,7 +29,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
   const rafRef = useRef<number>(0);
 
   const totalCards = cards.length;
-  const arcSpan = 18;
+  const arcSpan = typeof window !== "undefined" && window.innerWidth >= 1024 ? 22 : 18;
 
   const positionCards = useCallback(
     (rotation: number) => {
@@ -36,10 +38,13 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
       const containerWidth = container.offsetWidth;
       const containerHeight = container.offsetHeight;
+      const isDesktop = containerWidth >= 1024;
+      const cardW = isDesktop ? CARD_WIDTH_LG : CARD_WIDTH_SM;
+      const cardH = isDesktop ? CARD_HEIGHT_LG : CARD_HEIGHT_SM;
 
       const radius = Math.max(containerWidth * 0.9, 800);
       const centerX = containerWidth / 2;
-      const centerY = radius + containerHeight * 0.05 + CARD_HEIGHT / 2;
+      const centerY = radius + containerHeight * 0.05 + cardH / 2;
 
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
@@ -56,8 +61,8 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
         const rad = (angle * Math.PI) / 180;
 
-        const x = centerX + radius * Math.cos(rad) - CARD_WIDTH / 2;
-        const y = centerY + radius * Math.sin(rad) - CARD_HEIGHT / 2;
+        const x = centerX + radius * Math.cos(rad) - cardW / 2;
+        const y = centerY + radius * Math.sin(rad) - cardH / 2;
 
         const tilt = angle + 90;
 
@@ -184,8 +189,9 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           }}
           className="slider-card absolute top-0 left-0 flex flex-col items-center"
           style={{
-            width: CARD_WIDTH,
-            height: CARD_HEIGHT,
+            width: "min(440px, 90vw)",
+            height: "auto",
+            aspectRatio: `${CARD_WIDTH_LG} / ${CARD_HEIGHT_LG}`,
             padding: "1rem",
             willChange: "transform",
           }}
