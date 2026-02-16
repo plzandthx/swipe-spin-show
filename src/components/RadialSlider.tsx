@@ -15,10 +15,18 @@ interface RadialSliderProps {
   cards: SliderCard[];
 }
 
-const CARD_WIDTH_SM = 340;
-const CARD_HEIGHT_SM = 483;
+const CARD_WIDTH_SM = 280;
+const CARD_HEIGHT_SM = 385;
+const CARD_WIDTH_MD = 400;
+const CARD_HEIGHT_MD = 550;
 const CARD_WIDTH_LG = 520;
 const CARD_HEIGHT_LG = 713;
+
+const getBreakpoint = (width: number) => {
+  if (width >= 1024) return "lg";
+  if (width >= 768) return "md";
+  return "sm";
+};
 
 const RadialSlider = ({ cards }: RadialSliderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,7 +37,8 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
   const rafRef = useRef<number>(0);
 
   const totalCards = cards.length;
-  const arcSpan = typeof window !== "undefined" && window.innerWidth >= 1024 ? 20 : 18;
+  const bp = typeof window !== "undefined" ? getBreakpoint(window.innerWidth) : "sm";
+  const arcSpan = bp === "lg" ? 20 : bp === "md" ? 16 : 18;
 
   const positionCards = useCallback(
     (rotation: number) => {
@@ -38,11 +47,15 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
       const containerWidth = container.offsetWidth;
       const containerHeight = container.offsetHeight;
-      const isDesktop = containerWidth >= 1024;
-      const cardW = isDesktop ? CARD_WIDTH_LG : CARD_WIDTH_SM;
-      const cardH = isDesktop ? CARD_HEIGHT_LG : CARD_HEIGHT_SM;
+      const bp = getBreakpoint(containerWidth);
+      const cardW = bp === "lg" ? CARD_WIDTH_LG : bp === "md" ? CARD_WIDTH_MD : CARD_WIDTH_SM;
+      const cardH = bp === "lg" ? CARD_HEIGHT_LG : bp === "md" ? CARD_HEIGHT_MD : CARD_HEIGHT_SM;
 
-      const radius = Math.max(containerWidth * 0.9, 800);
+      const radius = bp === "lg" 
+        ? Math.max(containerWidth * 0.9, 800) 
+        : bp === "md" 
+          ? Math.max(containerWidth * 1.1, 700) 
+          : Math.max(containerWidth * 0.9, 800);
       const centerX = containerWidth / 2;
       const centerY = radius + containerHeight * 0.05 + cardH / 2;
 
@@ -177,7 +190,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           }}
           className="slider-card absolute top-0 left-0 flex flex-col items-center"
           style={{
-            width: "min(520px, 85vw)",
+            width: "min(520px, clamp(280px, 55vw, 520px))",
             height: "auto",
             aspectRatio: `${CARD_WIDTH_LG} / ${CARD_HEIGHT_LG}`,
             padding: "1rem",
