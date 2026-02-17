@@ -92,78 +92,83 @@ function mount() {
   target.style.display = "block";
   target.style.width = "100%";
   target.style.overflow = "visible";
-  target.style.minHeight = "500px";
+  target.style.minHeight = "600px";
   target.style.position = "relative";
 
-  // Webflow wraps embeds in layers of containers that may have overflow:hidden
-  // or height/max-height constraints. Walk up and unblock all of them.
+  // Webflow wraps embeds in layers of containers that may have overflow:hidden,
+  // height/max-height constraints, or display:none. Walk up and unblock all.
   let ancestor: HTMLElement | null = target.parentElement;
-  for (let i = 0; i < 5 && ancestor; i++) {
+  for (let i = 0; i < 8 && ancestor && ancestor !== document.body; i++) {
+    const cs = getComputedStyle(ancestor);
     ancestor.style.overflow = "visible";
     ancestor.style.maxHeight = "none";
-    console.log(`[swipe-spin-show] ancestor ${i}:`, ancestor.tagName, ancestor.className,
-      "overflow:", getComputedStyle(ancestor).overflow);
+    ancestor.style.height = "auto";
+    console.log(`[swipe-spin-show] ancestor ${i}: <${ancestor.tagName}.${ancestor.className}> overflow=${cs.overflow} display=${cs.display} height=${cs.height} width=${cs.width}`);
     ancestor = ancestor.parentElement;
   }
 
-  const root = createRoot(target);
-  root.render(
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        fontFamily: "'Inter Tight', system-ui, -apple-system, sans-serif",
-      }}
-    >
+  try {
+    const root = createRoot(target);
+    root.render(
       <div
         style={{
-          position: "relative",
-          zIndex: 10,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "1.5rem",
-          width: "100%",
-          paddingTop: "3rem",
-          paddingBottom: "4rem",
+          fontFamily: "'Inter Tight', system-ui, -apple-system, sans-serif",
         }}
       >
-        <h2
+        <div
           style={{
-            textAlign: "center",
-            whiteSpace: "nowrap",
-            fontFamily: "'Inter Tight', sans-serif",
-            fontWeight: 800,
-            fontSize: "clamp(2rem, 5vw, 4.5rem)",
-            color: "hsl(0 0% 18%)",
-            lineHeight: 1,
-            letterSpacing: "-0.03em",
-            margin: 0,
+            position: "relative",
+            zIndex: 10,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "1.5rem",
+            width: "100%",
+            paddingTop: "3rem",
+            paddingBottom: "4rem",
           }}
         >
-          Impact by Design
-        </h2>
-        <span
-          style={{
-            fontSize: "0.75rem",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: "#999",
-            opacity: 0.6,
-          }}
-        >
-          Drag to explore
-        </span>
-      </div>
+          <h2
+            style={{
+              textAlign: "center",
+              whiteSpace: "nowrap",
+              fontFamily: "'Inter Tight', sans-serif",
+              fontWeight: 800,
+              fontSize: "clamp(2rem, 5vw, 4.5rem)",
+              color: "hsl(0 0% 18%)",
+              lineHeight: 1,
+              letterSpacing: "-0.03em",
+              margin: 0,
+            }}
+          >
+            Impact by Design
+          </h2>
+          <span
+            style={{
+              fontSize: "0.75rem",
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "#999",
+              opacity: 0.6,
+            }}
+          >
+            Drag to explore
+          </span>
+        </div>
 
-      <div style={{ width: "100%", overflow: "visible" }}>
-        <RadialSlider cards={sliderCards} />
+        <div style={{ width: "100%", overflow: "visible" }}>
+          <RadialSlider cards={sliderCards} />
+        </div>
       </div>
-    </div>
-  );
-
-  console.log("[swipe-spin-show] render() called, target.offsetWidth:", target.offsetWidth);
+    );
+    console.log("[swipe-spin-show] render() complete, target.offsetWidth:", target.offsetWidth);
+  } catch (err) {
+    console.error("[swipe-spin-show] render failed:", err);
+    target.innerHTML = '<div style="padding:40px;background:#fee;color:#c00;font-size:16px;border:2px solid #c00">swipe-spin-show: render error — check console</div>';
+  }
 }
 
 // Mount as soon as the DOM is ready
