@@ -110,7 +110,8 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           : Math.max(containerWidth * 0.9, 800);
       const centerX = containerWidth / 2;
       const verticalOffset = bp === "lg" ? 0.03 : bp === "md" ? 0.02 : 0.05;
-      const centerY = radius + containerHeight * verticalOffset + cardH / 2;
+      const stableHeight = bp === "lg" ? 1100 : bp === "md" ? 800 : 600;
+      const centerY = radius + stableHeight * verticalOffset + cardH / 2;
 
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
