@@ -1,0 +1,37 @@
+/* Embed-only styles: utilities only (no base reset that could conflict with host page) */
+@tailwind utilities;
+
+/* CSS custom properties for the slider */
+:root {
+  --slider-card-bg: 0 0% 12%;
+  --slider-card-fg: 0 0% 96%;
+  --slider-card-muted: 0 0% 65%;
+  --slider-card-radius: 1.25rem;
+  --slider-card-shadow: none;
+}
+
+/* Slider card styles */
+.slider-card {
+  background-color: hsl(var(--slider-card-bg));
+  color: hsl(var(--slider-card-fg));
+  border-radius: var(--slider-card-radius);
+  box-shadow: var(--slider-card-shadow);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.slider-card__image {
+  border-radius: calc(var(--slider-card-radius) - 0.25rem);
+  overflow: hidden;
+}
+
+.slider-card__title {
+  color: hsl(var(--slider-card-fg));
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.slider-card__text {
+  color: hsl(var(--slider-card-muted));
+  line-height: 1.5;
+}
