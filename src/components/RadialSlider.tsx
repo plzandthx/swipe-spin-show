@@ -45,18 +45,24 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
   const arcSpan = bp === "lg" ? 20 : bp === "md" ? 24 : 18;
 
   const drawArcDots = useCallback(
-    (width: number, height: number, cx: number, cy: number, r: number) => {
+    (width: number, canvasHeight: number, cx: number, cy: number, r: number, extraTop: number) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const dpr = window.devicePixelRatio || 1;
+      const totalHeight = canvasHeight + extraTop;
       canvas.width = width * dpr;
-      canvas.height = height * dpr;
+      canvas.height = totalHeight * dpr;
       canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
+      canvas.style.height = `${totalHeight}px`;
+      canvas.style.top = `${-extraTop}px`;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
       ctx.scale(dpr, dpr);
-      ctx.clearRect(0, 0, width, height);
+      ctx.clearRect(0, 0, width, totalHeight);
+
+      // Shift all drawing down by extraTop so coordinates align
+      const drawCy = cy + extraTop;
+
       const arcRange = 75;
       const startAngle = (-90 - arcRange) * Math.PI / 180;
       const endAngle = (-90 + arcRange) * Math.PI / 180;
@@ -81,7 +87,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         ctx.strokeStyle = `hsla(0, 0%, 75%, ${opacity})`;
         ctx.setLineDash([3, 14]);
         ctx.beginPath();
-        ctx.arc(cx, cy, arcR, startAngle, endAngle);
+        ctx.arc(cx, drawCy, arcR, startAngle, endAngle);
         ctx.stroke();
       }
       ctx.setLineDash([]);
@@ -156,8 +162,10 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       // Dynamically size container to fully contain all cards
       container.style.height = `${maxBottom}px`;
 
-      // Draw arc dots at original position; canvas is shifted up via CSS
-      drawArcDots(containerWidth, maxBottom, centerX, centerY, radius);
+      // Draw arc dots shifted up by 20% and extending behind header
+      const shiftUp = maxBottom * 0.2;
+      const extraTop = 300; // extra canvas space above container for header area
+      drawArcDots(containerWidth, maxBottom, centerX, centerY - shiftUp, radius, extraTop);
     },
     [arcSpan, totalCards, drawArcDots]
   );
@@ -250,7 +258,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
     >
       <canvas
         ref={canvasRef}
-        className="absolute top-0 left-0 pointer-events-none"
+        className="absolute left-0 pointer-events-none"
         style={{ zIndex: 0 }}
       />
       {cards.map((card, i) => (

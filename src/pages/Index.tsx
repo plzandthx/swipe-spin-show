@@ -46,7 +46,7 @@ const sliderCards = [
 const Index = () => {
   return (
     <div className="flex flex-col items-center overflow-x-hidden">
-      <div className="flex flex-col items-center gap-6 w-full pt-12 pb-16" style={{ marginBottom: "0" }}>
+      <div className="relative z-10 flex flex-col items-center gap-6 w-full pt-12 pb-16" style={{ marginBottom: "0" }}>
         <h1
           className="text-center whitespace-nowrap"
           style={{
