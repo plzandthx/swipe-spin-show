@@ -196,8 +196,8 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     const snapped = Math.round(rotationRef.current / arcSpan) * arcSpan;
     gsap.to(rotationRef, {
       current: snapped,
-      duration: 0.5,
-      ease: "power2.out",
+      duration: 0.4,
+      ease: "power3.out",
       onUpdate: () => positionCards(rotationRef.current),
     });
   }, [arcSpan, positionCards]);
@@ -226,45 +226,107 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     initLayout();
 
     // --- Pointer-based drag handling ---
-    // touch-action: pan-y on the container lets the browser handle vertical
-    // scrolling natively. Horizontal movement fires pointer events which we
-    // use to rotate the cards. This replaces GSAP Draggable which overrides
-    // touch-action to "none" and blocks page scrolling on mobile.
+    // touch-action: pan-y on the container (and all children) lets the browser
+    // handle vertical scrolling natively. We use a dead-zone with directional
+    // intent detection so the first few pixels of movement decide whether this
+    // is a horizontal card-drag or a vertical page-scroll — matching the feel
+    // of the osmo.supply product slider.
     let dragging = false;
-    let lastTime = 0;
+    let committed = false;  // true once we've decided this is a horizontal drag
+    let startX = 0;
+    let startY = 0;
+    const DRAG_THRESHOLD = 8; // px dead-zone before committing
+
+    // Windowed velocity tracker — averages pointer movement over the last
+    // 100ms for smooth, predictable momentum after release.
+    const velocityBuffer: Array<{ x: number; t: number }> = [];
+    const VELOCITY_WINDOW = 100; // ms
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
       dragging = true;
+      committed = false;
+      startX = e.clientX;
+      startY = e.clientY;
       lastXRef.current = e.clientX;
-      lastTime = Date.now();
+      velocityBuffer.length = 0;
+      velocityBuffer.push({ x: e.clientX, t: Date.now() });
       velocityRef.current = 0;
       gsap.killTweensOf(rotationRef);
       cancelAnimationFrame(rafRef.current);
-      // Only capture for mouse — capturing touch would override touch-action
-      if (e.pointerType === "mouse") {
-        container.setPointerCapture(e.pointerId);
-      }
     };
 
     const onPointerMove = (e: PointerEvent) => {
       if (!dragging) return;
-      const dx = e.clientX - lastXRef.current;
+
       const now = Date.now();
-      const dt = Math.max(now - lastTime, 1);
-      velocityRef.current = (dx / dt) * 16;
+
+      // --- Intent detection (dead-zone phase) ---
+      if (!committed) {
+        const dx = Math.abs(e.clientX - startX);
+        const dy = Math.abs(e.clientY - startY);
+
+        // Vertical movement won the race → release to browser for native scroll
+        if (dy > DRAG_THRESHOLD) {
+          dragging = false;
+          return;
+        }
+
+        // Horizontal movement won → commit to card drag
+        if (dx > DRAG_THRESHOLD) {
+          committed = true;
+          container.style.cursor = "grabbing";
+          // Capture pointer for mouse so drag continues outside container
+          if (e.pointerType === "mouse") {
+            container.setPointerCapture(e.pointerId);
+          }
+        } else {
+          return; // Still in dead zone — do nothing
+        }
+      }
+
+      // --- Active drag ---
+      const dx = e.clientX - lastXRef.current;
       lastXRef.current = e.clientX;
-      lastTime = now;
       rotationRef.current += dx * 0.12;
       positionCards(rotationRef.current);
+
+      // Track position for velocity calculation
+      velocityBuffer.push({ x: e.clientX, t: now });
+      const cutoff = now - VELOCITY_WINDOW;
+      while (velocityBuffer.length > 1 && velocityBuffer[0].t < cutoff) {
+        velocityBuffer.shift();
+      }
     };
 
     const onPointerUp = () => {
       if (!dragging) return;
+      const wasDrag = committed;
       dragging = false;
+      committed = false;
+      container.style.cursor = "grab";
+
+      if (!wasDrag) {
+        // Never committed to a drag — nothing to animate
+        return;
+      }
+
+      // Calculate release velocity from the buffer
+      let releaseVelocity = 0;
+      if (velocityBuffer.length >= 2) {
+        const first = velocityBuffer[0];
+        const last = velocityBuffer[velocityBuffer.length - 1];
+        const dt = last.t - first.t;
+        if (dt > 0) {
+          releaseVelocity = ((last.x - first.x) / dt) * 16; // px per frame @ 60fps
+        }
+      }
+
+      velocityRef.current = releaseVelocity;
+
       const decay = () => {
-        velocityRef.current *= 0.92;
-        if (Math.abs(velocityRef.current) > 0.3) {
+        velocityRef.current *= 0.93;
+        if (Math.abs(velocityRef.current) > 0.5) {
           rotationRef.current += velocityRef.current * 0.12;
           positionCards(rotationRef.current);
           rafRef.current = requestAnimationFrame(decay);
@@ -278,6 +340,8 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     const onPointerCancel = () => {
       if (!dragging) return;
       dragging = false;
+      committed = false;
+      container.style.cursor = "grab";
       velocityRef.current = 0;
       snapToNearest();
     };
@@ -311,7 +375,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
         width: "100%",
         overflow: "visible",
         minHeight: "400px",
-        touchAction: "pan-y pinch-zoom",
+        touchAction: "pan-y",
         cursor: "grab",
         marginTop: "clamp(20px, 5vh, 60px)",
       }}
@@ -344,6 +408,8 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
             aspectRatio: `${CARD_WIDTH_LG} / ${CARD_HEIGHT_LG}`,
             padding: "clamp(1rem, 2.5vw, 1.75rem)",
             willChange: "transform",
+            touchAction: "pan-y",
+            userSelect: "none",
             backgroundColor: card.bgColor ? `#${card.bgColor}` : undefined,
             color: card.textColor || undefined,
           }}
