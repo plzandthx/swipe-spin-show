@@ -390,10 +390,12 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: "0.75rem",
+              gap: "1.5rem",
               textAlign: "center",
               width: "100%",
               padding: "0 15%",
+              flex: 1,
+              justifyContent: "center",
             }}
           >
             <h3
@@ -401,7 +403,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
                 color: card.textColor || undefined,
                 fontFamily: "'Inter Tight', sans-serif",
                 fontWeight: 400,
-                fontSize: "clamp(1.275rem, 3vw, 2.55rem)",
+                fontSize: "clamp(1.6rem, 3.75vw, 3.2rem)",
                 lineHeight: 1.3,
               }}
             >

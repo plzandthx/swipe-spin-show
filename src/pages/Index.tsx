@@ -10,6 +10,7 @@ const sliderCards = [
     imagePlaceholder: "🎨 Image",
     bgColor: "224F3C",
     textColor: "white",
+    videoSrc: "https://s3.amazonaws.com/webflow-prod-assets/69114d8af12364de425f9279/69176354c9d595e71a1425e0_beam-imp-rev-growth.webm",
   },
   {
     id: 2,
@@ -27,6 +28,7 @@ const sliderCards = [
     imagePlaceholder: "💻 Image",
     bgColor: "FFFFFF",
     textColor: "#333333",
+    videoSrc: "https://s3.amazonaws.com/webflow-prod-assets/69114d8af12364de425f9279/69177b91da59b5a68dc3f4ee_c1-imp-video-2.webm",
   },
   {
     id: 4,
@@ -35,6 +37,7 @@ const sliderCards = [
     imagePlaceholder: "📊 Image",
     bgColor: "58B469",
     textColor: "white",
+    videoSrc: "https://s3.amazonaws.com/webflow-prod-assets/69114d8af12364de425f9279/6916b3e9be3412201b11b23a_csat-imp-video-2.webm",
   },
   {
     id: 5,
@@ -43,6 +46,7 @@ const sliderCards = [
     imagePlaceholder: "🧭 Image",
     bgColor: "0D2B1E",
     textColor: "white",
+    videoSrc: "https://s3.amazonaws.com/webflow-prod-assets/69114d8af12364de425f9279/69179757fa24c3ee50e2751f_ebitda-imp-video.webm",
   },
 ];
 
