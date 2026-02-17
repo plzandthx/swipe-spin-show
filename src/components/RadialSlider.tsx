@@ -161,14 +161,32 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
       // Dynamically size container to fully contain all cards
       container.style.height = `${maxBottom}px`;
-
-      // Draw arc dots shifted up by 20% and extending behind header
-      const shiftUp = maxBottom * 0.05;
-      const extraTop = 300; // extra canvas space above container for header area
-      drawArcDots(containerWidth, maxBottom, centerX, centerY - shiftUp, radius, extraTop);
     },
-    [arcSpan, totalCards, drawArcDots]
+    [arcSpan, totalCards]
   );
+
+  // Draw dots once and only redraw on resize — not on card rotation
+  const drawDots = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const containerWidth = container.offsetWidth;
+    const bp = getBreakpoint(containerWidth);
+    const cardH = bp === "lg" ? CARD_HEIGHT_LG : bp === "md" ? CARD_HEIGHT_MD : CARD_HEIGHT_SM;
+    const radius = bp === "lg"
+      ? Math.max(containerWidth * 0.9, 800)
+      : bp === "md"
+        ? Math.max(containerWidth * 1.4, 900)
+        : Math.max(containerWidth * 0.9, 800);
+    const centerX = containerWidth / 2;
+    const verticalOffset = bp === "lg" ? 0.03 : bp === "md" ? 0.02 : 0.05;
+    const stableHeight = bp === "lg" ? 1100 : bp === "md" ? 800 : 600;
+    const centerY = radius + stableHeight * verticalOffset + cardH / 2;
+
+    const maxBottom = container.offsetHeight || stableHeight;
+    const shiftUp = maxBottom * 0.05;
+    const extraTop = 300;
+    drawArcDots(containerWidth, maxBottom, centerX, centerY - shiftUp, radius, extraTop);
+  }, [drawArcDots]);
 
   const snapToNearest = useCallback(() => {
     const snapped = Math.round(rotationRef.current / arcSpan) * arcSpan;
@@ -185,6 +203,9 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
     if (!container) return;
 
     positionCards(rotationRef.current);
+
+    // Draw dots once after initial card positioning
+    requestAnimationFrame(() => drawDots());
 
     const proxy = document.createElement("div");
     proxy.style.position = "absolute";
@@ -215,7 +236,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         lastXRef.current = this.x;
         lastTime = now;
 
-        // No clamping — infinite rotation
         rotationRef.current += dx * 0.12;
         positionCards(rotationRef.current);
       },
@@ -234,8 +254,10 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       },
     });
 
-
-    const handleResize = () => positionCards(rotationRef.current);
+    const handleResize = () => {
+      positionCards(rotationRef.current);
+      drawDots();
+    };
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -244,7 +266,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(rafRef.current);
     };
-  }, [positionCards, snapToNearest]);
+  }, [positionCards, snapToNearest, drawDots]);
 
   return (
     <div
