@@ -46,14 +46,7 @@ const sliderCards = [
 const Index = () => {
   return (
     <div className="flex flex-col items-center overflow-x-hidden">
-      <div className="w-full">
-        <RadialSlider cards={sliderCards} />
-      </div>
-
-      <div
-        className="relative z-10 flex flex-col items-center gap-6 w-full py-8"
-        style={{ marginTop: "-80px" }}
-      >
+      <div className="flex flex-col items-center gap-6 w-full pt-12 pb-0" style={{ marginBottom: "-6em" }}>
         <h1
           className="text-center whitespace-nowrap"
           style={{
@@ -70,6 +63,10 @@ const Index = () => {
         <span className="text-xs tracking-widest uppercase text-muted-foreground opacity-60">
           Drag to explore
         </span>
+      </div>
+
+      <div className="w-full">
+        <RadialSlider cards={sliderCards} />
       </div>
 
       <div className="w-full h-[60vh] flex items-center justify-center">
