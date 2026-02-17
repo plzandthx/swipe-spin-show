@@ -1,8 +1,5 @@
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import gsap from "gsap";
-import { Draggable } from "gsap/Draggable";
-
-gsap.registerPlugin(Draggable);
 
 interface SliderCard {
   id: number;
@@ -212,52 +209,67 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     // Draw dots once after initial card positioning
     requestAnimationFrame(() => drawDots());
 
-    const proxy = document.createElement("div");
-    proxy.style.position = "absolute";
-    proxy.style.width = "1px";
-    proxy.style.height = "1px";
-    proxy.style.visibility = "hidden";
-    container.appendChild(proxy);
-
+    // --- Pointer-based drag handling ---
+    // touch-action: pan-y on the container lets the browser handle vertical
+    // scrolling natively. Horizontal movement fires pointer events which we
+    // use to rotate the cards. This replaces GSAP Draggable which overrides
+    // touch-action to "none" and blocks page scrolling on mobile.
+    let dragging = false;
     let lastTime = 0;
 
-    const draggable = Draggable.create(proxy, {
-      type: "x",
-      trigger: container,
-      cursor: "grab",
-      activeCursor: "grabbing",
-      onDragStart: function () {
-        velocityRef.current = 0;
-        lastXRef.current = this.x;
-        lastTime = Date.now();
-        gsap.killTweensOf(rotationRef);
-        cancelAnimationFrame(rafRef.current);
-      },
-      onDrag: function () {
-        const dx = this.x - lastXRef.current;
-        const now = Date.now();
-        const dt = Math.max(now - lastTime, 1);
-        velocityRef.current = (dx / dt) * 16;
-        lastXRef.current = this.x;
-        lastTime = now;
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.button !== 0) return;
+      dragging = true;
+      lastXRef.current = e.clientX;
+      lastTime = Date.now();
+      velocityRef.current = 0;
+      gsap.killTweensOf(rotationRef);
+      cancelAnimationFrame(rafRef.current);
+      // Only capture for mouse — capturing touch would override touch-action
+      if (e.pointerType === "mouse") {
+        container.setPointerCapture(e.pointerId);
+      }
+    };
 
-        rotationRef.current += dx * 0.12;
-        positionCards(rotationRef.current);
-      },
-      onDragEnd: function () {
-        const decay = () => {
-          velocityRef.current *= 0.92;
-          if (Math.abs(velocityRef.current) > 0.3) {
-            rotationRef.current += velocityRef.current * 0.12;
-            positionCards(rotationRef.current);
-            rafRef.current = requestAnimationFrame(decay);
-          } else {
-            snapToNearest();
-          }
-        };
-        rafRef.current = requestAnimationFrame(decay);
-      },
-    });
+    const onPointerMove = (e: PointerEvent) => {
+      if (!dragging) return;
+      const dx = e.clientX - lastXRef.current;
+      const now = Date.now();
+      const dt = Math.max(now - lastTime, 1);
+      velocityRef.current = (dx / dt) * 16;
+      lastXRef.current = e.clientX;
+      lastTime = now;
+      rotationRef.current += dx * 0.12;
+      positionCards(rotationRef.current);
+    };
+
+    const onPointerUp = () => {
+      if (!dragging) return;
+      dragging = false;
+      const decay = () => {
+        velocityRef.current *= 0.92;
+        if (Math.abs(velocityRef.current) > 0.3) {
+          rotationRef.current += velocityRef.current * 0.12;
+          positionCards(rotationRef.current);
+          rafRef.current = requestAnimationFrame(decay);
+        } else {
+          snapToNearest();
+        }
+      };
+      rafRef.current = requestAnimationFrame(decay);
+    };
+
+    const onPointerCancel = () => {
+      if (!dragging) return;
+      dragging = false;
+      velocityRef.current = 0;
+      snapToNearest();
+    };
+
+    container.addEventListener("pointerdown", onPointerDown);
+    container.addEventListener("pointermove", onPointerMove);
+    container.addEventListener("pointerup", onPointerUp);
+    container.addEventListener("pointercancel", onPointerCancel);
 
     const handleResize = () => {
       positionCards(rotationRef.current);
@@ -266,8 +278,10 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     window.addEventListener("resize", handleResize);
 
     return () => {
-      draggable[0]?.kill();
-      proxy.remove();
+      container.removeEventListener("pointerdown", onPointerDown);
+      container.removeEventListener("pointermove", onPointerMove);
+      container.removeEventListener("pointerup", onPointerUp);
+      container.removeEventListener("pointercancel", onPointerCancel);
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(rafRef.current);
     };
@@ -280,6 +294,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       style={{
         minHeight: "400px",
         touchAction: "pan-y pinch-zoom",
+        cursor: "grab",
         marginTop: "clamp(20px, 5vh, 60px)",
       }}
     >
