@@ -367,6 +367,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
           </div>
 
           <div
+            className="slider-card__content"
             style={{
               display: "flex",
               flexDirection: "column",
