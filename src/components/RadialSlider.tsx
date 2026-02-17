@@ -57,14 +57,12 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       if (!ctx) return;
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, width, height);
-
-      // Draw dotted concentric arcs behind and around cards
       const arcRange = 75;
       const startAngle = (-90 - arcRange) * Math.PI / 180;
       const endAngle = (-90 + arcRange) * Math.PI / 180;
       const lineStep = 24;
       const totalArcs = 50;
-      const fadeEdge = 10; // number of arcs on each edge to fade
+      const fadeEdge = 10;
 
       ctx.lineWidth = 1.5;
 
@@ -73,7 +71,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         const arcR = r + offset;
         if (arcR < 50) continue;
 
-        // Fade opacity at top and bottom edges
         let opacity = 1;
         if (a < fadeEdge) {
           opacity = a / fadeEdge;
@@ -81,7 +78,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           opacity = (totalArcs - 1 - a) / fadeEdge;
         }
 
-        ctx.strokeStyle = `hsla(0, 0%, 82%, ${opacity})`;
+        ctx.strokeStyle = `hsla(0, 0%, 75%, ${opacity})`;
         ctx.setLineDash([3, 14]);
         ctx.beginPath();
         ctx.arc(cx, cy, arcR, startAngle, endAngle);
@@ -159,9 +156,8 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       // Dynamically size container to fully contain all cards
       container.style.height = `${maxBottom}px`;
 
-      // Draw arc dots (shifted up by 20%)
-      const dotOffsetY = maxBottom * 0.2;
-      drawArcDots(containerWidth, maxBottom, centerX, centerY - dotOffsetY, radius);
+      // Draw arc dots at original position; canvas is shifted up via CSS
+      drawArcDots(containerWidth, maxBottom, centerX, centerY, radius);
     },
     [arcSpan, totalCards, drawArcDots]
   );
