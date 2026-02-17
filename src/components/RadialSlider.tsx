@@ -231,11 +231,40 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     // intent detection so the first few pixels of movement decide whether this
     // is a horizontal card-drag or a vertical page-scroll — matching the feel
     // of the osmo.supply product slider.
+    //
+    // On touch/pen devices we apply two enhancements once horizontal drag intent
+    // is confirmed:
+    //   1. Switch touch-action from "pan-y" → "none" so the browser can't steal
+    //      the gesture mid-swipe.
+    //   2. Temporarily freeze page scroll (iOS-safe position:fixed pattern) to
+    //      prevent jittery competing movement.
+    // Both are reversed on pointer up / cancel so the user is never trapped.
     let dragging = false;
     let committed = false;  // true once we've decided this is a horizontal drag
+    let isTouchDrag = false; // true when the committing pointer is touch or pen
     let startX = 0;
     let startY = 0;
+    let savedScrollY = 0;
     const DRAG_THRESHOLD = 8; // px dead-zone before committing
+
+    // ---- helpers: freeze / restore page scroll (touch only) ----
+    const freezeScroll = () => {
+      savedScrollY = window.scrollY || window.pageYOffset;
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.width = "100%";
+    };
+
+    const restoreScroll = () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      window.scrollTo(0, savedScrollY);
+    };
 
     // Windowed velocity tracker — averages pointer movement over the last
     // 100ms for smooth, predictable momentum after release.
@@ -246,6 +275,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       if (e.button !== 0) return;
       dragging = true;
       committed = false;
+      isTouchDrag = e.pointerType === "touch" || e.pointerType === "pen";
       startX = e.clientX;
       startY = e.clientY;
       lastXRef.current = e.clientX;
@@ -280,6 +310,12 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
           if (e.pointerType === "mouse") {
             container.setPointerCapture(e.pointerId);
           }
+          // Touch/pen: lock touch-action and freeze page scroll so the
+          // browser can't hijack the gesture mid-swipe.
+          if (isTouchDrag) {
+            container.style.touchAction = "none";
+            freezeScroll();
+          }
         } else {
           return; // Still in dead zone — do nothing
         }
@@ -302,9 +338,17 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     const onPointerUp = () => {
       if (!dragging) return;
       const wasDrag = committed;
+      const wasTouch = isTouchDrag;
       dragging = false;
       committed = false;
+      isTouchDrag = false;
       container.style.cursor = "grab";
+
+      // Restore touch defaults that were overridden during the drag
+      if (wasTouch) {
+        container.style.touchAction = "pan-y";
+        restoreScroll();
+      }
 
       if (!wasDrag) {
         // Never committed to a drag — nothing to animate
@@ -339,9 +383,17 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
 
     const onPointerCancel = () => {
       if (!dragging) return;
+      const wasTouch = isTouchDrag;
       dragging = false;
       committed = false;
+      isTouchDrag = false;
       container.style.cursor = "grab";
+
+      if (wasTouch) {
+        container.style.touchAction = "pan-y";
+        restoreScroll();
+      }
+
       velocityRef.current = 0;
       snapToNearest();
     };
