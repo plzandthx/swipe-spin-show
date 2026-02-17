@@ -43,5 +43,6 @@
   .slider-card__text,
   .slider-card p {
     font-size: clamp(0.85rem, 2vw, 1.1rem) !important;
+    padding-bottom: 1rem !important;
   }
 }

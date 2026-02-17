@@ -8,7 +8,52 @@
  */
 import { createRoot } from "react-dom/client";
 import RadialSlider from "@/components/RadialSlider";
+import { useTypewriter } from "@/hooks/use-typewriter";
 import "./embed.css";
+
+const HEADING_TEXT = "Impact by Design";
+
+function TypewriterHeading() {
+  const { displayText, showCursor } = useTypewriter({ text: HEADING_TEXT });
+  return (
+    <h2
+      style={{
+        textAlign: "center",
+        whiteSpace: "nowrap",
+        fontFamily: "'Inter Tight', sans-serif",
+        fontWeight: 600,
+        fontSize: "clamp(2rem, 5vw, 4.5rem)",
+        color: "hsl(0 0% 18%)",
+        lineHeight: 1,
+        letterSpacing: "-0.03em",
+        margin: 0,
+        position: "relative",
+      }}
+    >
+      <span style={{ visibility: "hidden" }}>{HEADING_TEXT}</span>
+      <span
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: "100%",
+        }}
+      >
+        {displayText}
+        <span
+          style={{
+            opacity: showCursor ? 1 : 0,
+            transition: "opacity 0.1s",
+            fontWeight: 300,
+            marginLeft: "1px",
+          }}
+        >
+          |
+        </span>
+      </span>
+    </h2>
+  );
+}
 
 // Load Inter Tight from Google Fonts instead of bundling font files
 (function loadFont() {
@@ -91,7 +136,8 @@ function mount() {
   // regardless of how Webflow styles it.
   target.style.display = "block";
   target.style.width = "100%";
-  target.style.overflow = "visible";
+  target.style.overflowX = "hidden";
+  target.style.overflowY = "visible";
   target.style.minHeight = "600px";
   target.style.position = "relative";
 
@@ -100,7 +146,8 @@ function mount() {
   let ancestor: HTMLElement | null = target.parentElement;
   for (let i = 0; i < 8 && ancestor && ancestor !== document.body; i++) {
     const cs = getComputedStyle(ancestor);
-    ancestor.style.overflow = "visible";
+    ancestor.style.overflowX = "hidden";
+    ancestor.style.overflowY = "visible";
     ancestor.style.maxHeight = "none";
     ancestor.style.height = "auto";
     console.log(`[swipe-spin-show] ancestor ${i}: <${ancestor.tagName}.${ancestor.className}> overflow=${cs.overflow} display=${cs.display} height=${cs.height} width=${cs.width}`);
@@ -116,6 +163,8 @@ function mount() {
           flexDirection: "column",
           alignItems: "center",
           fontFamily: "'Inter Tight', system-ui, -apple-system, sans-serif",
+          overflowX: "hidden",
+          width: "100%",
         }}
       >
         <div
@@ -131,21 +180,7 @@ function mount() {
             paddingBottom: "4rem",
           }}
         >
-          <h2
-            style={{
-              textAlign: "center",
-              whiteSpace: "nowrap",
-              fontFamily: "'Inter Tight', sans-serif",
-              fontWeight: 600,
-              fontSize: "clamp(2rem, 5vw, 4.5rem)",
-              color: "hsl(0 0% 18%)",
-              lineHeight: 1,
-              letterSpacing: "-0.03em",
-              margin: 0,
-            }}
-          >
-            Impact by Design
-          </h2>
+          <TypewriterHeading />
           <span
             style={{
               fontSize: "0.75rem",
@@ -159,7 +194,7 @@ function mount() {
           </span>
         </div>
 
-        <div style={{ width: "100%", overflow: "visible" }}>
+        <div style={{ width: "100%", overflowX: "hidden", overflowY: "visible" }}>
           <RadialSlider cards={sliderCards} />
         </div>
       </div>
