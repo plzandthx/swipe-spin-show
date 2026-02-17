@@ -172,7 +172,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
   }, [positionCards, snapToNearest]);
 
   return (
-  <>
     <div
       ref={containerRef}
       className="relative w-full overflow-visible"
@@ -240,28 +239,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           </div>
         </div>
       ))}
-
     </div>
-
-    <div className="flex flex-col items-center gap-6 mt-8 pb-4">
-      <h1
-        className="text-center whitespace-nowrap"
-        style={{
-          fontFamily: "'Inter Tight', sans-serif",
-          fontWeight: 800,
-          fontSize: "clamp(2rem, 5vw, 4.5rem)",
-          color: "hsl(0 0% 18%)",
-          lineHeight: 1,
-          letterSpacing: "-0.03em",
-        }}
-      >
-        Impact by Design
-      </h1>
-      <span className="text-xs tracking-widest uppercase text-muted-foreground opacity-60">
-        Drag to explore
-      </span>
-    </div>
-  </>
   );
 };
 

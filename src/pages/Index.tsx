@@ -49,6 +49,29 @@ const Index = () => {
       <div className="w-full">
         <RadialSlider cards={sliderCards} />
       </div>
+
+      <div
+        className="relative z-10 flex flex-col items-center gap-6 w-full pb-8"
+        style={{ marginTop: "clamp(-120px, -10vw, -40px)" }}
+      >
+        <h1
+          className="text-center whitespace-nowrap"
+          style={{
+            fontFamily: "'Inter Tight', sans-serif",
+            fontWeight: 800,
+            fontSize: "clamp(2rem, 5vw, 4.5rem)",
+            color: "hsl(0 0% 18%)",
+            lineHeight: 1,
+            letterSpacing: "-0.03em",
+          }}
+        >
+          Impact by Design
+        </h1>
+        <span className="text-xs tracking-widest uppercase text-muted-foreground opacity-60">
+          Drag to explore
+        </span>
+      </div>
+
       <div className="w-full h-[60vh] flex items-center justify-center">
         <span className="text-muted-foreground text-sm tracking-widest uppercase">Spacer section</span>
       </div>
