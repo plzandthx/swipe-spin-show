@@ -62,8 +62,6 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       const verticalOffset = bp === "lg" ? 0.03 : bp === "md" ? 0.02 : 0.05;
       const centerY = radius + containerHeight * verticalOffset + cardH / 2;
 
-      let maxBottom = 0;
-
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
 
@@ -92,15 +90,20 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           opacity: 1,
           zIndex: Math.round((1 - absAngle / 180) * 100),
         });
+      });
 
-        // Estimate the bottom edge accounting for rotation
-        const tiltRad = (tilt * Math.PI) / 180;
-        const rotatedBottom = y + Math.abs(cardH * Math.cos(tiltRad)) + Math.abs(cardW * Math.sin(tiltRad));
-        if (rotatedBottom > maxBottom) maxBottom = rotatedBottom;
+      // Measure actual card bottoms using getBoundingClientRect
+      const containerTop = container.getBoundingClientRect().top;
+      let maxBottom = 0;
+      cardRefs.current.forEach((card) => {
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const bottom = rect.bottom - containerTop + container.scrollTop;
+        if (bottom > maxBottom) maxBottom = bottom;
       });
 
       // Dynamically size container to fully contain all cards
-      container.style.height = `${maxBottom + 20}px`;
+      container.style.height = `${maxBottom}px`;
     },
     [arcSpan, totalCards]
   );
