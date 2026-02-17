@@ -106,6 +106,15 @@
   }
 }
 
+/* Embed mode: transparent background, no scrollbars, no margin */
+.is-embedded html,
+.is-embedded body {
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
 /* Slider card styles */
 .slider-card {
   background-color: hsl(var(--slider-card-bg));

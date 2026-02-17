@@ -8,25 +8,33 @@
 
   // Read optional attributes from a wrapper div
   var wrapper = container.querySelector("[data-swipe-spin-show]") || container;
-  var height = wrapper.getAttribute("data-height") || "700px";
   var width = wrapper.getAttribute("data-width") || "100%";
 
-  // Create iframe
+  // Create iframe — starts at 0 height, auto-sizes from content
   var iframe = document.createElement("iframe");
   iframe.src = SITE_URL;
   iframe.style.width = width;
-  iframe.style.height = height;
+  iframe.style.height = "0";
   iframe.style.border = "none";
   iframe.style.overflow = "hidden";
-  iframe.style.borderRadius = "0";
   iframe.style.display = "block";
+  iframe.style.background = "transparent";
   iframe.setAttribute("allowfullscreen", "true");
   iframe.setAttribute("loading", "lazy");
+  iframe.setAttribute("scrolling", "no");
+  iframe.setAttribute("allowtransparency", "true");
   iframe.setAttribute(
     "allow",
-    "accelerometer; gyroscope; touch-action"
+    "accelerometer; gyroscope"
   );
   iframe.title = "Impact by Design – Radial Slider";
+
+  // Listen for height messages from the component
+  window.addEventListener("message", function (e) {
+    if (e.data && e.data.type === "swipe-spin-show:resize" && typeof e.data.height === "number") {
+      iframe.style.height = e.data.height + "px";
+    }
+  });
 
   // If there's a placeholder div, replace it; otherwise append after the script
   var placeholder = container.querySelector("[data-swipe-spin-show]");
