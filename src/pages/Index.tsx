@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import RadialSlider from "@/components/RadialSlider";
+import { useTypewriter } from "@/hooks/use-typewriter";
 
 const sliderCards = [
   {
@@ -46,8 +47,11 @@ const sliderCards = [
 
 const isEmbedded = window !== window.parent;
 
+const HEADING_TEXT = "Impact by Design";
+
 const Index = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const { displayText, showCursor } = useTypewriter({ text: HEADING_TEXT });
 
   const postHeight = useCallback(() => {
     if (!isEmbedded || !wrapperRef.current) return;
@@ -83,16 +87,38 @@ const Index = () => {
             color: "hsl(0 0% 18%)",
             lineHeight: 1,
             letterSpacing: "-0.03em",
+            position: "relative",
           }}
         >
-          Impact by Design
+          {/* Invisible placeholder keeps layout stable during typing */}
+          <span style={{ visibility: "hidden" }}>{HEADING_TEXT}</span>
+          <span
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: "100%",
+            }}
+          >
+            {displayText}
+            <span
+              style={{
+                opacity: showCursor ? 1 : 0,
+                transition: "opacity 0.1s",
+                fontWeight: 300,
+                marginLeft: "1px",
+              }}
+            >
+              |
+            </span>
+          </span>
         </h1>
         <span className="text-xs tracking-widest uppercase text-muted-foreground opacity-60">
           Drag to explore
         </span>
       </div>
 
-      <div className="w-full">
+      <div className="w-full" style={{ overflowX: "hidden" }}>
         <RadialSlider cards={sliderCards} onLayoutReady={postHeight} />
       </div>
     </div>
