@@ -52,6 +52,7 @@ const Index = () => {
 
       <div
         className="relative z-10 flex flex-col items-center gap-6 w-full py-8"
+        style={{ marginTop: "-80px" }}
       >
         <h1
           className="text-center whitespace-nowrap"
