@@ -1,3 +1,4 @@
+import { useEffect, useRef, useCallback } from "react";
 import RadialSlider from "@/components/RadialSlider";
 
 const sliderCards = [
@@ -43,9 +44,35 @@ const sliderCards = [
   },
 ];
 
+const isEmbedded = window !== window.parent;
+
 const Index = () => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const postHeight = useCallback(() => {
+    if (!isEmbedded || !wrapperRef.current) return;
+    const height = wrapperRef.current.scrollHeight;
+    window.parent.postMessage({ type: "swipe-spin-show:resize", height }, "*");
+  }, []);
+
+  useEffect(() => {
+    if (!isEmbedded) return;
+    // Observe size changes and forward height to parent frame
+    const el = wrapperRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => postHeight());
+    ro.observe(el);
+    // Also post after a short delay to catch GSAP layout settling
+    const t = setTimeout(postHeight, 500);
+    return () => { ro.disconnect(); clearTimeout(t); };
+  }, [postHeight]);
+
   return (
-    <div className="flex flex-col items-center overflow-x-hidden">
+    <div
+      ref={wrapperRef}
+      className="flex flex-col items-center overflow-x-hidden"
+      style={{ background: "transparent" }}
+    >
       <div className="relative z-10 flex flex-col items-center gap-6 w-full pt-12 pb-16" style={{ marginBottom: "0" }}>
         <h1
           className="text-center whitespace-nowrap"
@@ -66,7 +93,7 @@ const Index = () => {
       </div>
 
       <div className="w-full">
-        <RadialSlider cards={sliderCards} />
+        <RadialSlider cards={sliderCards} onLayoutReady={postHeight} />
       </div>
     </div>
   );

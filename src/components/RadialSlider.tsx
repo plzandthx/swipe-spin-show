@@ -15,6 +15,7 @@ interface SliderCard {
 
 interface RadialSliderProps {
   cards: SliderCard[];
+  onLayoutReady?: () => void;
 }
 
 const CARD_WIDTH_SM = 280;
@@ -30,7 +31,7 @@ const getBreakpoint = (width: number) => {
   return "sm";
 };
 
-const RadialSlider = ({ cards }: RadialSliderProps) => {
+const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rotationRef = useRef(0);
@@ -164,8 +165,9 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
       // Dynamically size container to fully contain all cards
       container.style.height = `${maxBottom}px`;
+      onLayoutReady?.();
     },
-    [arcSpan, totalCards]
+    [arcSpan, totalCards, onLayoutReady]
   );
 
   // Draw dots once and only redraw on resize — not on card rotation
