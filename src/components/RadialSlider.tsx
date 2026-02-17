@@ -159,8 +159,9 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       // Dynamically size container to fully contain all cards
       container.style.height = `${maxBottom}px`;
 
-      // Draw arc dots
-      drawArcDots(containerWidth, maxBottom, centerX, centerY, radius);
+      // Draw arc dots (shifted up by 20%)
+      const dotOffsetY = maxBottom * 0.2;
+      drawArcDots(containerWidth, maxBottom, centerX, centerY - dotOffsetY, radius);
     },
     [arcSpan, totalCards, drawArcDots]
   );
