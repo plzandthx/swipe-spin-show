@@ -6,6 +6,7 @@
  *   <div id="swipe-spin-show"></div>
  *   <script src="https://cdn.jsdelivr.net/gh/plzandthx/swipe-spin-show@main/dist/embed.js"></script>
  */
+import { useRef } from "react";
 import { createRoot } from "react-dom/client";
 import RadialSlider from "@/components/RadialSlider";
 import { useTypewriter } from "@/hooks/use-typewriter";
@@ -14,9 +15,11 @@ import "./embed.css";
 const HEADING_TEXT = "Impact by Design";
 
 function TypewriterHeading() {
-  const { displayText, showCursor } = useTypewriter({ text: HEADING_TEXT });
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const { displayText, showCursor } = useTypewriter({ text: HEADING_TEXT, ref: headingRef });
   return (
     <h2
+      ref={headingRef}
       style={{
         textAlign: "center",
         whiteSpace: "nowrap",

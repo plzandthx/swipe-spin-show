@@ -51,7 +51,8 @@ const HEADING_TEXT = "Impact by Design";
 
 const Index = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const { displayText, showCursor } = useTypewriter({ text: HEADING_TEXT });
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const { displayText, showCursor } = useTypewriter({ text: HEADING_TEXT, ref: headingRef });
 
   const postHeight = useCallback(() => {
     if (!isEmbedded || !wrapperRef.current) return;
@@ -79,6 +80,7 @@ const Index = () => {
     >
       <div className="relative z-10 flex flex-col items-center gap-6 w-full pt-12 pb-16" style={{ marginBottom: "0" }}>
         <h1
+          ref={headingRef}
           className="text-center whitespace-nowrap"
           style={{
             fontFamily: "'Inter Tight', sans-serif",
