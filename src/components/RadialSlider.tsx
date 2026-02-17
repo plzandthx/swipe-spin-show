@@ -279,7 +279,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       className="relative w-full overflow-visible"
       style={{
         minHeight: "400px",
-        touchAction: "none",
+        touchAction: "pan-y pinch-zoom",
         marginTop: "clamp(20px, 5vh, 60px)",
       }}
     >
