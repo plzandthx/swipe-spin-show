@@ -206,10 +206,17 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
 
     // Guard against 0-width container (common in Webflow embeds where layout
     // hasn't completed when the useEffect fires). Retry until width is available.
+    let retryCount = 0;
     const initLayout = () => {
-      if (container.offsetWidth === 0) {
+      const w = container.offsetWidth;
+      console.log(`[swipe-spin-show] initLayout attempt ${retryCount}, width: ${w}`);
+      if (w === 0 && retryCount < 60) {
+        retryCount++;
         requestAnimationFrame(initLayout);
         return;
+      }
+      if (w === 0) {
+        console.error("[swipe-spin-show] container still 0-width after 60 frames, forcing layout");
       }
       positionCards(rotationRef.current);
       requestAnimationFrame(() => drawDots());

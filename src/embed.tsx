@@ -74,6 +74,8 @@ const sliderCards = [
 ];
 
 function mount() {
+  console.log("[swipe-spin-show] mount() called");
+
   const target = document.getElementById("swipe-spin-show");
   if (!target) {
     console.warn(
@@ -82,18 +84,25 @@ function mount() {
     return;
   }
 
+  console.log("[swipe-spin-show] target found, offsetWidth:", target.offsetWidth,
+    "parent:", target.parentElement?.className);
+
   // Ensure mount target has block layout so it gets width from its parent,
   // regardless of how Webflow styles it.
   target.style.display = "block";
   target.style.width = "100%";
   target.style.overflow = "visible";
+  target.style.minHeight = "500px";
+  target.style.position = "relative";
 
-  // Webflow wraps embeds in <div class="w-embed"> which often has
-  // overflow:hidden, clipping the absolutely-positioned cards.
-  // Walk up a few levels and unblock overflow so cards are visible.
+  // Webflow wraps embeds in layers of containers that may have overflow:hidden
+  // or height/max-height constraints. Walk up and unblock all of them.
   let ancestor: HTMLElement | null = target.parentElement;
-  for (let i = 0; i < 3 && ancestor; i++) {
+  for (let i = 0; i < 5 && ancestor; i++) {
     ancestor.style.overflow = "visible";
+    ancestor.style.maxHeight = "none";
+    console.log(`[swipe-spin-show] ancestor ${i}:`, ancestor.tagName, ancestor.className,
+      "overflow:", getComputedStyle(ancestor).overflow);
     ancestor = ancestor.parentElement;
   }
 
@@ -104,7 +113,6 @@ function mount() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        overflowX: "hidden",
         fontFamily: "'Inter Tight', system-ui, -apple-system, sans-serif",
       }}
     >
@@ -149,11 +157,13 @@ function mount() {
         </span>
       </div>
 
-      <div style={{ width: "100%" }}>
+      <div style={{ width: "100%", overflow: "visible" }}>
         <RadialSlider cards={sliderCards} />
       </div>
     </div>
   );
+
+  console.log("[swipe-spin-show] render() called, target.offsetWidth:", target.offsetWidth);
 }
 
 // Mount as soon as the DOM is ready
