@@ -16,17 +16,23 @@ interface RadialSliderProps {
   onLayoutReady?: () => void;
 }
 
-const CARD_WIDTH_SM = 280;
-const CARD_HEIGHT_SM = 385;
-const CARD_WIDTH_MD = 400;
-const CARD_HEIGHT_MD = 550;
-const CARD_WIDTH_LG = 590;
-const CARD_HEIGHT_LG = 809;
+const CARD_ASPECT = 809 / 590; // height / width from design spec
 
 const getBreakpoint = (width: number) => {
   if (width >= 1024) return "lg";
   if (width >= 768) return "md";
   return "sm";
+};
+
+/** Matches CSS: clamp(280px, min(55vw, 42vw + 60px), 590px) */
+const getCardWidth = () => {
+  const vw = window.innerWidth;
+  return Math.min(Math.max(280, Math.min(vw * 0.55, vw * 0.42 + 60)), 590);
+};
+
+const getArcSpan = (width: number) => {
+  const bp = getBreakpoint(width);
+  return bp === "lg" ? 14 : 16;
 };
 
 const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
@@ -40,8 +46,6 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
   const arcParamsRef = useRef<{ centerX: number; centerY: number; radius: number } | null>(null);
 
   const totalCards = cards.length;
-  const bp = typeof window !== "undefined" ? getBreakpoint(window.innerWidth) : "sm";
-  const arcSpan = bp === "lg" ? 14 : bp === "md" ? 16 : 16;
 
   const drawArcDots = useCallback(
     (width: number, canvasHeight: number, cx: number, cy: number, r: number, extraTop: number) => {
@@ -103,10 +107,10 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       if (!container) return;
 
       const containerWidth = container.offsetWidth;
-      const containerHeight = container.offsetHeight;
       const bp = getBreakpoint(containerWidth);
-      const cardW = bp === "lg" ? CARD_WIDTH_LG : bp === "md" ? CARD_WIDTH_MD : CARD_WIDTH_SM;
-      const cardH = bp === "lg" ? CARD_HEIGHT_LG : bp === "md" ? CARD_HEIGHT_MD : CARD_HEIGHT_SM;
+      const cardW = getCardWidth();
+      const cardH = cardW * CARD_ASPECT;
+      const arcSpan = getArcSpan(containerWidth);
 
       const radius = bp === "lg"
         ? Math.max(containerWidth * 2.2, 2800)
@@ -123,7 +127,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
 
         const totalSpan = (totalCards - 1) * arcSpan;
         const baseAngle = -90 - totalSpan / 2 + i * arcSpan + rotation;
-        
+
         const fullCircle = totalCards * arcSpan;
         let wrappedOffset = ((baseAngle + 90 + totalSpan / 2) % fullCircle + fullCircle) % fullCircle;
         const angle = -90 - totalSpan / 2 + wrappedOffset;
@@ -166,7 +170,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
         onLayoutReady?.();
       }
     },
-    [arcSpan, totalCards, onLayoutReady]
+    [totalCards, onLayoutReady]
   );
 
   // Draw dots once and only redraw on resize — not on card rotation
@@ -175,7 +179,8 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     if (!container) return;
     const containerWidth = container.offsetWidth;
     const bp = getBreakpoint(containerWidth);
-    const cardH = bp === "lg" ? CARD_HEIGHT_LG : bp === "md" ? CARD_HEIGHT_MD : CARD_HEIGHT_SM;
+    const cardW = getCardWidth();
+    const cardH = cardW * CARD_ASPECT;
     const radius = bp === "lg"
       ? Math.max(containerWidth * 2.2, 2800)
       : bp === "md"
@@ -193,6 +198,9 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
   }, [drawArcDots]);
 
   const snapToNearest = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const arcSpan = getArcSpan(container.offsetWidth);
     const snapped = Math.round(rotationRef.current / arcSpan) * arcSpan;
     gsap.to(rotationRef, {
       current: snapped,
@@ -200,7 +208,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       ease: "power3.out",
       onUpdate: () => positionCards(rotationRef.current),
     });
-  }, [arcSpan, positionCards]);
+  }, [positionCards]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -229,42 +237,31 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     // touch-action: pan-y on the container (and all children) lets the browser
     // handle vertical scrolling natively. We use a dead-zone with directional
     // intent detection so the first few pixels of movement decide whether this
-    // is a horizontal card-drag or a vertical page-scroll — matching the feel
-    // of the osmo.supply product slider.
+    // is a horizontal card-drag or a vertical page-scroll.
     //
     // On touch/pen devices we apply two enhancements once horizontal drag intent
     // is confirmed:
     //   1. Switch touch-action from "pan-y" → "none" so the browser can't steal
     //      the gesture mid-swipe.
-    //   2. Temporarily freeze page scroll (iOS-safe position:fixed pattern) to
-    //      prevent jittery competing movement.
+    //   2. preventDefault on touchmove to block native scroll without layout
+    //      shifts (avoids the position:fixed hack that caused cards to jump).
     // Both are reversed on pointer up / cancel so the user is never trapped.
     let dragging = false;
     let committed = false;  // true once we've decided this is a horizontal drag
     let isTouchDrag = false; // true when the committing pointer is touch or pen
     let startX = 0;
     let startY = 0;
-    let savedScrollY = 0;
     const DRAG_THRESHOLD = 8; // px dead-zone before committing
 
-    // ---- helpers: freeze / restore page scroll (touch only) ----
-    const freezeScroll = () => {
-      savedScrollY = window.scrollY || window.pageYOffset;
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${savedScrollY}px`;
-      document.body.style.width = "100%";
+    // Prevent native scroll during committed horizontal drag by intercepting
+    // touchmove. This replaces the old position:fixed scroll-freeze approach
+    // which caused layout shifts (cards jumping to hero) on tablets.
+    const onTouchMove = (e: TouchEvent) => {
+      if (committed) {
+        e.preventDefault();
+      }
     };
-
-    const restoreScroll = () => {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      window.scrollTo(0, savedScrollY);
-    };
+    container.addEventListener("touchmove", onTouchMove, { passive: false });
 
     // Windowed velocity tracker — averages pointer movement over the last
     // 100ms for smooth, predictable momentum after release.
@@ -310,11 +307,11 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
           if (e.pointerType === "mouse") {
             container.setPointerCapture(e.pointerId);
           }
-          // Touch/pen: lock touch-action and freeze page scroll so the
-          // browser can't hijack the gesture mid-swipe.
+          // Touch/pen: lock touch-action so the browser can't hijack
+          // the gesture mid-swipe. Scroll is prevented by the touchmove
+          // handler above (no layout-shifting position:fixed needed).
           if (isTouchDrag) {
             container.style.touchAction = "none";
-            freezeScroll();
           }
         } else {
           return; // Still in dead zone — do nothing
@@ -347,7 +344,6 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       // Restore touch defaults that were overridden during the drag
       if (wasTouch) {
         container.style.touchAction = "pan-y";
-        restoreScroll();
       }
 
       if (!wasDrag) {
@@ -391,7 +387,6 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
 
       if (wasTouch) {
         container.style.touchAction = "pan-y";
-        restoreScroll();
       }
 
       velocityRef.current = 0;
@@ -414,6 +409,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       container.removeEventListener("pointermove", onPointerMove);
       container.removeEventListener("pointerup", onPointerUp);
       container.removeEventListener("pointercancel", onPointerCancel);
+      container.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(rafRef.current);
     };
@@ -457,7 +453,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
             alignItems: "center",
             width: "clamp(280px, min(55vw, 42vw + 60px), 590px)",
             height: "auto",
-            aspectRatio: `${CARD_WIDTH_LG} / ${CARD_HEIGHT_LG}`,
+            aspectRatio: `590 / 809`,
             padding: "clamp(1rem, 2.5vw, 1.75rem)",
             willChange: "transform",
             touchAction: "pan-y",
