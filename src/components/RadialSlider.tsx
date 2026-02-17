@@ -204,10 +204,17 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     const container = containerRef.current;
     if (!container) return;
 
-    positionCards(rotationRef.current);
-
-    // Draw dots once after initial card positioning
-    requestAnimationFrame(() => drawDots());
+    // Guard against 0-width container (common in Webflow embeds where layout
+    // hasn't completed when the useEffect fires). Retry until width is available.
+    const initLayout = () => {
+      if (container.offsetWidth === 0) {
+        requestAnimationFrame(initLayout);
+        return;
+      }
+      positionCards(rotationRef.current);
+      requestAnimationFrame(() => drawDots());
+    };
+    initLayout();
 
     // --- Pointer-based drag handling ---
     // touch-action: pan-y on the container lets the browser handle vertical

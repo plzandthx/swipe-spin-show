@@ -86,6 +86,16 @@ function mount() {
   // regardless of how Webflow styles it.
   target.style.display = "block";
   target.style.width = "100%";
+  target.style.overflow = "visible";
+
+  // Webflow wraps embeds in <div class="w-embed"> which often has
+  // overflow:hidden, clipping the absolutely-positioned cards.
+  // Walk up a few levels and unblock overflow so cards are visible.
+  let ancestor: HTMLElement | null = target.parentElement;
+  for (let i = 0; i < 3 && ancestor; i++) {
+    ancestor.style.overflow = "visible";
+    ancestor = ancestor.parentElement;
+  }
 
   const root = createRoot(target);
   root.render(
