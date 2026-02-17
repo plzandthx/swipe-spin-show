@@ -82,6 +82,11 @@ function mount() {
     return;
   }
 
+  // Ensure mount target has block layout so it gets width from its parent,
+  // regardless of how Webflow styles it.
+  target.style.display = "block";
+  target.style.width = "100%";
+
   const root = createRoot(target);
   root.render(
     <div
@@ -89,6 +94,7 @@ function mount() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        overflowX: "hidden",
         fontFamily: "'Inter Tight', system-ui, -apple-system, sans-serif",
       }}
     >

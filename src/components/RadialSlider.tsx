@@ -290,8 +290,10 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full overflow-visible"
       style={{
+        position: "relative",
+        width: "100%",
+        overflow: "visible",
         minHeight: "400px",
         touchAction: "pan-y pinch-zoom",
         cursor: "grab",
@@ -300,8 +302,12 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     >
       <canvas
         ref={canvasRef}
-        className="absolute left-0 pointer-events-none"
-        style={{ zIndex: 0 }}
+        style={{
+          position: "absolute",
+          left: 0,
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
       />
       {cards.map((card, i) => (
         <div
@@ -309,8 +315,14 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
           ref={(el) => {
             cardRefs.current[i] = el;
           }}
-          className="slider-card absolute top-0 left-0 flex flex-col items-center"
+          className="slider-card"
           style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
             width: "clamp(280px, min(55vw, 42vw + 60px), 590px)",
             height: "auto",
             aspectRatio: `${CARD_WIDTH_LG} / ${CARD_HEIGHT_LG}`,
@@ -321,20 +333,34 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
           }}
         >
           <div
-            className="slider-card__image mb-5 flex items-center justify-center w-full"
+            className="slider-card__image"
             style={{
+              marginBottom: "1.25rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
               height: "65%",
               backgroundColor: card.textColor
                 ? `${card.textColor === "white" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)"}`
                 : "hsl(var(--slider-card-fg) / 0.08)",
             }}
           >
-            <span className="text-3xl" style={{ color: card.textColor || undefined }}>
+            <span style={{ fontSize: "1.875rem", color: card.textColor || undefined }}>
               {card.imagePlaceholder}
             </span>
           </div>
 
-          <div className="flex flex-col gap-3 text-center w-full" style={{ padding: "0 15%" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.75rem",
+              textAlign: "center",
+              width: "100%",
+              padding: "0 15%",
+            }}
+          >
             <h3
               style={{
                 color: card.textColor || undefined,
@@ -347,6 +373,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
               {card.title}
             </h3>
             <p
+              className={!card.textColor ? "slider-card__text" : ""}
               style={{
                 color: card.textColor === "white" ? "white" : card.textColor ? "#333333" : undefined,
                 fontFamily: "'Inter Tight', sans-serif",
@@ -354,7 +381,6 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
                 fontWeight: 300,
                 lineHeight: 1.6,
               }}
-              className={!card.textColor ? "slider-card__text" : ""}
             >
               {card.description}
             </p>
