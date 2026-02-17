@@ -21,8 +21,8 @@ const CARD_WIDTH_SM = 280;
 const CARD_HEIGHT_SM = 385;
 const CARD_WIDTH_MD = 400;
 const CARD_HEIGHT_MD = 550;
-const CARD_WIDTH_LG = 520;
-const CARD_HEIGHT_LG = 713;
+const CARD_WIDTH_LG = 590;
+const CARD_HEIGHT_LG = 809;
 
 const getBreakpoint = (width: number) => {
   if (width >= 1024) return "lg";
@@ -172,6 +172,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
   }, [positionCards, snapToNearest]);
 
   return (
+  <>
     <div
       ref={containerRef}
       className="relative w-full overflow-visible"
@@ -189,7 +190,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           }}
           className="slider-card absolute top-0 left-0 flex flex-col items-center"
           style={{
-            width: "clamp(280px, min(55vw, 42vw + 60px), 520px)",
+            width: "clamp(280px, min(55vw, 42vw + 60px), 590px)",
             height: "auto",
             aspectRatio: `${CARD_WIDTH_LG} / ${CARD_HEIGHT_LG}`,
             padding: "clamp(1rem, 2.5vw, 1.75rem)",
@@ -240,28 +241,27 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         </div>
       ))}
 
-      <div
-        className="pointer-events-none absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-6"
-        style={{ bottom: "clamp(10px, -8vw + 120px, 100px)" }}
-      >
-        <h1
-          className="text-center whitespace-nowrap"
-          style={{
-            fontFamily: "'Inter Tight', sans-serif",
-            fontWeight: 800,
-            fontSize: "clamp(2rem, 5vw, 4.5rem)",
-            color: "hsl(0 0% 18%)",
-            lineHeight: 1,
-            letterSpacing: "-0.03em",
-          }}
-        >
-          Impact by Design
-        </h1>
-        <span className="text-xs tracking-widest uppercase text-muted-foreground opacity-60">
-          Drag to explore
-        </span>
-      </div>
     </div>
+
+    <div className="flex flex-col items-center gap-6 mt-8 pb-4">
+      <h1
+        className="text-center whitespace-nowrap"
+        style={{
+          fontFamily: "'Inter Tight', sans-serif",
+          fontWeight: 800,
+          fontSize: "clamp(2rem, 5vw, 4.5rem)",
+          color: "hsl(0 0% 18%)",
+          lineHeight: 1,
+          letterSpacing: "-0.03em",
+        }}
+      >
+        Impact by Design
+      </h1>
+      <span className="text-xs tracking-widest uppercase text-muted-foreground opacity-60">
+        Drag to explore
+      </span>
+    </div>
+  </>
   );
 };
 

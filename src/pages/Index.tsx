@@ -14,7 +14,7 @@ const sliderCards = [
     title: "3X Acquisitions",
     description: "Company acquisitions while operating as head of design",
     imagePlaceholder: "✨ Image",
-    bgColor: "295659",
+    bgColor: "2E2E2E",
     textColor: "white",
   },
   {
