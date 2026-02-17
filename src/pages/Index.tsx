@@ -51,8 +51,7 @@ const Index = () => {
       </div>
 
       <div
-        className="relative z-10 flex flex-col items-center gap-6 w-full pb-8"
-        style={{ marginTop: "clamp(-120px, -10vw, -40px)" }}
+        className="relative z-10 flex flex-col items-center gap-6 w-full py-8"
       >
         <h1
           className="text-center whitespace-nowrap"
