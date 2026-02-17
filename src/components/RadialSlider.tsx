@@ -41,7 +41,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
 
   const totalCards = cards.length;
   const bp = typeof window !== "undefined" ? getBreakpoint(window.innerWidth) : "sm";
-  const arcSpan = bp === "lg" ? 20 : bp === "md" ? 24 : 18;
+  const arcSpan = bp === "lg" ? 14 : bp === "md" ? 16 : 16;
 
   const drawArcDots = useCallback(
     (width: number, canvasHeight: number, cx: number, cy: number, r: number, extraTop: number) => {
@@ -108,11 +108,11 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       const cardW = bp === "lg" ? CARD_WIDTH_LG : bp === "md" ? CARD_WIDTH_MD : CARD_WIDTH_SM;
       const cardH = bp === "lg" ? CARD_HEIGHT_LG : bp === "md" ? CARD_HEIGHT_MD : CARD_HEIGHT_SM;
 
-      const radius = bp === "lg" 
-        ? Math.max(containerWidth * 0.9, 800) 
-        : bp === "md" 
-          ? Math.max(containerWidth * 1.4, 900) 
-          : Math.max(containerWidth * 0.9, 800);
+      const radius = bp === "lg"
+        ? Math.max(containerWidth * 2.2, 2800)
+        : bp === "md"
+          ? Math.max(containerWidth * 2.5, 2000)
+          : Math.max(containerWidth * 3, 1200);
       const centerX = containerWidth / 2;
       const verticalOffset = bp === "lg" ? 0.03 : bp === "md" ? 0.02 : 0.05;
       const stableHeight = bp === "lg" ? 1100 : bp === "md" ? 800 : 600;
@@ -177,10 +177,10 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     const bp = getBreakpoint(containerWidth);
     const cardH = bp === "lg" ? CARD_HEIGHT_LG : bp === "md" ? CARD_HEIGHT_MD : CARD_HEIGHT_SM;
     const radius = bp === "lg"
-      ? Math.max(containerWidth * 0.9, 800)
+      ? Math.max(containerWidth * 2.2, 2800)
       : bp === "md"
-        ? Math.max(containerWidth * 1.4, 900)
-        : Math.max(containerWidth * 0.9, 800);
+        ? Math.max(containerWidth * 2.5, 2000)
+        : Math.max(containerWidth * 3, 1200);
     const centerX = containerWidth / 2;
     const verticalOffset = bp === "lg" ? 0.03 : bp === "md" ? 0.02 : 0.05;
     const stableHeight = bp === "lg" ? 1100 : bp === "md" ? 800 : 600;
