@@ -97,7 +97,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
   );
 
   const positionCards = useCallback(
-    (rotation: number) => {
+    (rotation: number, updateHeight = false) => {
       const container = containerRef.current;
       if (!container) return;
 
@@ -150,19 +150,20 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       // Store arc params for dot drawing
       arcParamsRef.current = { centerX, centerY, radius };
 
-      // Measure actual card bottoms using getBoundingClientRect
-      const containerTop = container.getBoundingClientRect().top;
-      let maxBottom = 0;
-      cardRefs.current.forEach((card) => {
-        if (!card) return;
-        const rect = card.getBoundingClientRect();
-        const bottom = rect.bottom - containerTop + container.scrollTop;
-        if (bottom > maxBottom) maxBottom = bottom;
-      });
-
-      // Dynamically size container to fully contain all cards
-      container.style.height = `${maxBottom}px`;
-      onLayoutReady?.();
+      // Only recalculate container height on init / resize — not during
+      // drag or momentum — to prevent sections below from jumping.
+      if (updateHeight) {
+        const containerTop = container.getBoundingClientRect().top;
+        let maxBottom = 0;
+        cardRefs.current.forEach((card) => {
+          if (!card) return;
+          const rect = card.getBoundingClientRect();
+          const bottom = rect.bottom - containerTop + container.scrollTop;
+          if (bottom > maxBottom) maxBottom = bottom;
+        });
+        container.style.height = `${maxBottom}px`;
+        onLayoutReady?.();
+      }
     },
     [arcSpan, totalCards, onLayoutReady]
   );
@@ -218,7 +219,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       if (w === 0) {
         console.error("[swipe-spin-show] container still 0-width after 60 frames, forcing layout");
       }
-      positionCards(rotationRef.current);
+      positionCards(rotationRef.current, true);
       requestAnimationFrame(() => drawDots());
     };
     initLayout();
@@ -286,7 +287,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
     container.addEventListener("pointercancel", onPointerCancel);
 
     const handleResize = () => {
-      positionCards(rotationRef.current);
+      positionCards(rotationRef.current, true);
       drawDots();
     };
     window.addEventListener("resize", handleResize);
