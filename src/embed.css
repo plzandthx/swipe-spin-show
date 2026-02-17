@@ -35,3 +35,13 @@
   color: hsl(var(--slider-card-muted));
   line-height: 1.5;
 }
+
+@media (max-width: 480px) {
+  .slider-card__content {
+    padding: 0 5% !important;
+  }
+  .slider-card__text,
+  .slider-card p {
+    font-size: clamp(0.85rem, 2vw, 1.1rem) !important;
+  }
+}
