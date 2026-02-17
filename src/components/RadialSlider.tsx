@@ -62,6 +62,8 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       const verticalOffset = bp === "lg" ? 0.03 : bp === "md" ? 0.02 : 0.05;
       const centerY = radius + containerHeight * verticalOffset + cardH / 2;
 
+      let maxBottom = 0;
+
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
 
@@ -90,7 +92,15 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
           opacity: 1,
           zIndex: Math.round((1 - absAngle / 180) * 100),
         });
+
+        // Estimate the bottom edge accounting for rotation
+        const tiltRad = (tilt * Math.PI) / 180;
+        const rotatedBottom = y + Math.abs(cardH * Math.cos(tiltRad)) + Math.abs(cardW * Math.sin(tiltRad));
+        if (rotatedBottom > maxBottom) maxBottom = rotatedBottom;
       });
+
+      // Dynamically size container to fully contain all cards
+      container.style.height = `${maxBottom + 20}px`;
     },
     [arcSpan, totalCards]
   );
@@ -176,7 +186,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       ref={containerRef}
       className="relative w-full overflow-visible"
       style={{
-        height: "clamp(600px, 80vh, 1100px)",
+        minHeight: "400px",
         touchAction: "none",
         marginTop: "clamp(20px, 5vh, 60px)",
       }}
