@@ -8,6 +8,7 @@ interface SliderCard {
   imagePlaceholder: string;
   bgColor?: string;
   textColor?: string;
+  videoSrc?: string;
 }
 
 interface RadialSliderProps {
@@ -355,15 +356,33 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
               alignItems: "center",
               justifyContent: "center",
               width: "100%",
-              height: "65%",
-              backgroundColor: card.textColor
-                ? `${card.textColor === "white" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)"}`
-                : "hsl(var(--slider-card-fg) / 0.08)",
+              height: card.videoSrc ? "auto" : "65%",
+              backgroundColor: card.videoSrc
+                ? "transparent"
+                : card.textColor
+                  ? `${card.textColor === "white" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)"}`
+                  : "hsl(var(--slider-card-fg) / 0.08)",
             }}
           >
-            <span style={{ fontSize: "1.875rem", color: card.textColor || undefined }}>
-              {card.imagePlaceholder}
-            </span>
+            {card.videoSrc ? (
+              <video
+                src={card.videoSrc}
+                autoPlay
+                loop
+                muted
+                playsInline
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  display: "block",
+                  borderRadius: "calc(var(--slider-card-radius) - 0.25rem)",
+                }}
+              />
+            ) : (
+              <span style={{ fontSize: "1.875rem", color: card.textColor || undefined }}>
+                {card.imagePlaceholder}
+              </span>
+            )}
           </div>
 
           <div

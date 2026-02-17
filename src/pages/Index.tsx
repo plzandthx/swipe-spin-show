@@ -18,6 +18,7 @@ const sliderCards = [
     imagePlaceholder: "✨ Image",
     bgColor: "2E2E2E",
     textColor: "white",
+    videoSrc: "https://s3.amazonaws.com/webflow-prod-assets/69114d8af12364de425f9279/6917a38c2f899c4905555602_br-imp-video.webm",
   },
   {
     id: 3,
