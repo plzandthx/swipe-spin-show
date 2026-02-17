@@ -41,6 +41,9 @@ function inlineCssPlugin() {
 export default defineConfig({
   base: "/swipe-spin-show/",
   plugins: [react(), inlineCssPlugin()],
+  define: {
+    "process.env.NODE_ENV": JSON.stringify("production"),
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
