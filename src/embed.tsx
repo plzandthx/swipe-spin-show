@@ -4,7 +4,7 @@
  *
  * Usage in Webflow:
  *   <div id="swipe-spin-show"></div>
- *   <script src="https://plzandthx.github.io/swipe-spin-show/embed.js"></script>
+ *   <script src="https://cdn.jsdelivr.net/gh/plzandthx/swipe-spin-show@main/dist/embed.js"></script>
  */
 import { createRoot } from "react-dom/client";
 import RadialSlider from "@/components/RadialSlider";
