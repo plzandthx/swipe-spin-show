@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
 
@@ -32,15 +32,55 @@ const getBreakpoint = (width: number) => {
 
 const RadialSlider = ({ cards }: RadialSliderProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const rotationRef = useRef(0);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const velocityRef = useRef(0);
   const lastXRef = useRef(0);
   const rafRef = useRef<number>(0);
+  const arcParamsRef = useRef<{ centerX: number; centerY: number; radius: number } | null>(null);
 
   const totalCards = cards.length;
   const bp = typeof window !== "undefined" ? getBreakpoint(window.innerWidth) : "sm";
   const arcSpan = bp === "lg" ? 20 : bp === "md" ? 24 : 18;
+
+  const drawArcDots = useCallback(
+    (width: number, height: number, cx: number, cy: number, r: number) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw dotted concentric arcs behind and around cards
+      const arcRange = 75;
+      const startAngle = (-90 - arcRange) * Math.PI / 180;
+      const endAngle = (-90 + arcRange) * Math.PI / 180;
+      const lineStep = 24;
+      const totalArcs = 50;
+
+      ctx.strokeStyle = "hsl(0 0% 82%)";
+      ctx.lineWidth = 1.5;
+
+      for (let a = 0; a < totalArcs; a++) {
+        const offset = (a - totalArcs / 2) * lineStep;
+        const arcR = r + offset;
+        if (arcR < 50) continue;
+        ctx.setLineDash([3, 14]);
+        ctx.beginPath();
+        ctx.arc(cx, cy, arcR, startAngle, endAngle);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    },
+    []
+  );
 
   const positionCards = useCallback(
     (rotation: number) => {
@@ -92,6 +132,9 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         });
       });
 
+      // Store arc params for dot drawing
+      arcParamsRef.current = { centerX, centerY, radius };
+
       // Measure actual card bottoms using getBoundingClientRect
       const containerTop = container.getBoundingClientRect().top;
       let maxBottom = 0;
@@ -104,8 +147,11 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
 
       // Dynamically size container to fully contain all cards
       container.style.height = `${maxBottom}px`;
+
+      // Draw arc dots
+      drawArcDots(containerWidth, maxBottom, centerX, centerY, radius);
     },
-    [arcSpan, totalCards]
+    [arcSpan, totalCards, drawArcDots]
   );
 
   const snapToNearest = useCallback(() => {
@@ -194,6 +240,11 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
         marginTop: "clamp(20px, 5vh, 60px)",
       }}
     >
+      <canvas
+        ref={canvasRef}
+        className="absolute top-0 left-0 pointer-events-none"
+        style={{ zIndex: 0 }}
+      />
       {cards.map((card, i) => (
         <div
           key={card.id}
