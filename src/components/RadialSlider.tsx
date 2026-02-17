@@ -163,7 +163,7 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       container.style.height = `${maxBottom}px`;
 
       // Draw arc dots shifted up by 20% and extending behind header
-      const shiftUp = maxBottom * 0.1;
+      const shiftUp = maxBottom * 0.05;
       const extraTop = 300; // extra canvas space above container for header area
       drawArcDots(containerWidth, maxBottom, centerX, centerY - shiftUp, radius, extraTop);
     },
