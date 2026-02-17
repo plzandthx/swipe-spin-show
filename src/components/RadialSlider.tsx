@@ -64,14 +64,24 @@ const RadialSlider = ({ cards }: RadialSliderProps) => {
       const endAngle = (-90 + arcRange) * Math.PI / 180;
       const lineStep = 24;
       const totalArcs = 50;
+      const fadeEdge = 10; // number of arcs on each edge to fade
 
-      ctx.strokeStyle = "hsl(0 0% 82%)";
       ctx.lineWidth = 1.5;
 
       for (let a = 0; a < totalArcs; a++) {
         const offset = (a - totalArcs / 2) * lineStep;
         const arcR = r + offset;
         if (arcR < 50) continue;
+
+        // Fade opacity at top and bottom edges
+        let opacity = 1;
+        if (a < fadeEdge) {
+          opacity = a / fadeEdge;
+        } else if (a > totalArcs - 1 - fadeEdge) {
+          opacity = (totalArcs - 1 - a) / fadeEdge;
+        }
+
+        ctx.strokeStyle = `hsla(0, 0%, 82%, ${opacity})`;
         ctx.setLineDash([3, 14]);
         ctx.beginPath();
         ctx.arc(cx, cy, arcR, startAngle, endAngle);
