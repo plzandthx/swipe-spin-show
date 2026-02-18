@@ -515,7 +515,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
             <h3
               style={{
                 color: card.textColor || undefined,
-                fontFamily: "'Inter Tight', sans-serif",
+                fontFamily: "'Instrument Serif', serif",
                 fontWeight: 400,
                 fontSize: "clamp(1.6rem, 3.75vw, 3.2rem)",
                 lineHeight: 1.3,

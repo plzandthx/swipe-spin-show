@@ -24,7 +24,7 @@ function TypewriterHeading() {
         textAlign: "center",
         whiteSpace: "nowrap",
         fontFamily: "'Inter Tight', sans-serif",
-        fontWeight: 600,
+        fontWeight: 400,
         fontSize: "clamp(2rem, 5vw, 4.5rem)",
         color: "hsl(0 0% 18%)",
         lineHeight: 1,
@@ -68,7 +68,7 @@ function TypewriterHeading() {
 
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700;800&display=swap";
+  link.href = "https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter+Tight:wght@300;400;700;800&display=swap";
   link.setAttribute("data-swipe-spin-show-font", "");
   document.head.appendChild(link);
 })();

@@ -89,7 +89,7 @@ const Index = () => {
           className="text-center whitespace-nowrap"
           style={{
             fontFamily: "'Inter Tight', sans-serif",
-            fontWeight: 600,
+            fontWeight: 400,
             fontSize: "clamp(2rem, 5vw, 4.5rem)",
             color: "hsl(0 0% 18%)",
             lineHeight: 1,
