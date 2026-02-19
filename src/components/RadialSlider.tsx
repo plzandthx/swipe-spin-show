@@ -321,7 +321,7 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       // --- Active drag ---
       const dx = e.clientX - lastXRef.current;
       lastXRef.current = e.clientX;
-      rotationRef.current += dx * 0.12;
+      rotationRef.current += dx * 0.07;
       positionCards(rotationRef.current);
 
       // Track position for velocity calculation
@@ -365,9 +365,9 @@ const RadialSlider = ({ cards, onLayoutReady }: RadialSliderProps) => {
       velocityRef.current = releaseVelocity;
 
       const decay = () => {
-        velocityRef.current *= 0.93;
-        if (Math.abs(velocityRef.current) > 0.5) {
-          rotationRef.current += velocityRef.current * 0.12;
+        velocityRef.current *= 0.88;
+        if (Math.abs(velocityRef.current) > 0.3) {
+          rotationRef.current += velocityRef.current * 0.07;
           positionCards(rotationRef.current);
           rafRef.current = requestAnimationFrame(decay);
         } else {
